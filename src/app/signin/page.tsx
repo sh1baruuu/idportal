@@ -1,6 +1,6 @@
 import SignInForm from '@/components/form/SignInForm';
 
-function SignInPage() {
+export default function SignInPage() {
 
     return (
         <div className='flex flex-col items-center h-screen justify-center'>
@@ -13,4 +13,4 @@ function SignInPage() {
     );
 }
 
-export default SignInPage;
+
