@@ -1,6 +1,7 @@
 'use client';
 
 import {
+    Bike,
     CreditCard,
     Home,
     LineChart,
@@ -12,6 +13,7 @@ import {
     Search,
     Settings,
     ShoppingCart,
+    User,
     Users2,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -41,7 +43,8 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { usePathname } from 'next/navigation';
+import { useAuth } from '@/context/AuthProvider';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface Props {
     children: React.ReactNode;
@@ -62,14 +65,14 @@ const navItems: NavItems[] = [
         path: '',
     },
     {
-        label: 'Barangays',
-        icon: MapPinned,
-        path: 'barangays',
+        label: 'Registrants',
+        icon: User,
+        path: 'registrants',
     },
     {
-        label: 'ID Registrants',
-        icon: CreditCard,
-        path: 'idregistrants',
+        label: 'Tricycles',
+        icon: Bike,
+        path: 'tricycles',
     },
     {
         label: 'Users',
@@ -80,6 +83,8 @@ const navItems: NavItems[] = [
 
 export default function DashboardLayout({ children }: Readonly<Props>) {
     const pathname = usePathname();
+    const router = useRouter();
+    const { onSignOut } = useAuth();
 
     const pathArr = pathname.split('/').filter((path) => path !== '');
 
@@ -87,12 +92,19 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
         pathArr[pathArr.length - 1] === 'dashboard'
             ? ''
             : pathArr[pathArr.length - 1];
-    const currentPathLabel = pathArr.length == 1 
-    ? 'home' 
-    : navItems.find(item => item.path === currentPath)?.label || '';
+    const currentPathLabel =
+        pathArr.length == 1
+            ? 'home'
+            : navItems.find((item) => item.path === currentPath)?.label || '';
 
-
-    
+    const signOut = async (): Promise<void> => {
+        try {
+            await onSignOut();
+            router.push('/login');
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     return (
         <div className='flex min-h-screen w-full flex-col bg-muted/40'>
@@ -250,7 +262,9 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
                             <DropdownMenuItem>Settings</DropdownMenuItem>
                             <DropdownMenuItem>Support</DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem>Logout</DropdownMenuItem>
+                            <DropdownMenuItem onClick={signOut}>
+                                Logout
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </header>

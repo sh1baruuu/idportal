@@ -7,12 +7,15 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { getFilterStatusByValue } from '@/config/data/filterOptions';
+import { getPaymentStatusLabel } from '@/config/data/paymentStatuses';
+import Barangay from '@/types/Barangay';
 
 interface Props {
-    barangayList: string[];
+    barangayLists: Barangay[] | undefined;
 }
 
-export default function BarangayTable({ barangayList }: Props) {
+export default function BarangayTable({ barangayLists }: Props) {
     return (
         <Table>
             <TableHeader>
@@ -31,30 +34,45 @@ export default function BarangayTable({ barangayList }: Props) {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {barangayList?.map((barangay) => {
-                    return (
-                        <TableRow key={barangay}>
-                            <TableCell>
-                                <div className='font-medium py-2 capitalize'>
-                                    {barangay}
-                                </div>
-                            </TableCell>
-                            <TableCell className='hidden sm:table-cell'>
-                                <Badge className='text-xs' variant='inProgress'>
-                                    Not Started
-                                </Badge>
-                            </TableCell>
-                            <TableCell className='hidden sm:table-cell'>
-                                11
-                            </TableCell>
-
-                            <TableCell className='hidden md:table-cell'>
-                                <Badge variant='secondary'>Secondary</Badge>
-                            </TableCell>
-                            <TableCell className='text-right'>₱1000</TableCell>
-                        </TableRow>
-                    );
-                })}
+                {barangayLists?.map(
+                    ({
+                        id,
+                        name,
+                        status,
+                        paymentStatus,
+                        noOfRegistrants,
+                        amount,
+                    }) => {
+                        return (
+                            <TableRow key={id}>
+                                <TableCell>
+                                    <div className='font-medium py-2 capitalize'>
+                                        {name}
+                                    </div>
+                                </TableCell>
+                                <TableCell className='hidden sm:table-cell'>
+                                    <Badge className='text-xs' variant={status}>
+                                        {getFilterStatusByValue(status)}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell className='hidden sm:table-cell'>
+                                    {noOfRegistrants}
+                                </TableCell>
+                                <TableCell className='hidden md:table-cell'>
+                                    <Badge
+                                        variant={paymentStatus}
+                                        className='uppercase font-semibold px-0'
+                                    >
+                                        {getPaymentStatusLabel(paymentStatus)}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell className='text-right'>
+                                    ₱{amount}
+                                </TableCell>
+                            </TableRow>
+                        );
+                    }
+                )}
             </TableBody>
         </Table>
     );

@@ -39,6 +39,10 @@ export const filterOptions: FilterOptions[] = [
 
 
 
+export function getFilterStatusByValue(value: string): string | undefined {
+    const option = filterOptions.find(option => option.value === value);
+    return option?.status;
+}
 
         
 

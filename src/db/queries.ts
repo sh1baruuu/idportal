@@ -1,27 +1,36 @@
+import barangayLists from "@/config/data/barangayLists";
 import db from "./db";
-import { InsertUser, usersTable } from "./schema";
+import { barangayTable, userTable } from "./schema";
+import { asc } from "drizzle-orm";
 
-const data: InsertUser = {
-    firstName: 'John',
-    middleName: 'A.',
-    lastName: 'Doe',
-    suffix: 'Jr.',
-    position: 'Developer',
-    dateOfBirth: new Date('1990-01-01').toISOString(),
-    gsisNo: '123456s789',
-    tinNo: '987654s321',
-    contactNo: '123-456-7890',
-    address: '123 Main St, City, Country',
-    emergencyContactPerson: 'Jane Doe',
-    emergencyContactNumber: '098-765-4321',
-    signatureUrl: 'https://example.com/signature/john_doe.png',
-    photoUrl: 'https://example.com/photos/john_doe.png',
+
+export const insertBarangayInitialData = async () => {
+    try {
+        const insertPromises = barangayLists.map(name =>
+            db.insert(barangayTable).values({ name })
+        );
+        await Promise.all(insertPromises);
+
+        await db.insert(userTable).values({
+            uid: "ORgnReOFRVU67w4bqDEeMve068w1",
+            username: "Admin",
+            role: "admin",
+            email: "devillarudolphangelo@gmail.com",
+            password: "123456@H",
+            barangay: "all"
+        })
+
+        console.log("success");
+
+    } catch (error) {
+        throw error;
+    }
 }
 
-export async function addUser() {
+export const fetchBarangayData = async () => {
     try {
-        await db.insert(usersTable).values(data);
-        console.log("added successfully");
+        const result = await db.select().from(barangayTable).orderBy(asc(barangayTable.name));
+        console.table(result)
     } catch (error) {
         throw error
     }

@@ -1,7 +1,6 @@
 'use client';
 
 import { useAuth } from '@/context/AuthProvider';
-import LogInCredential from '@/types/LogInCredential';
 import { useKeepMeLoggedInStore } from '@/zustand';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -9,6 +8,7 @@ import { toast } from 'react-hot-toast';
 import { LuEye, LuEyeOff } from 'react-icons/lu';
 import { MdLock, MdPerson } from 'react-icons/md';
 import Spinner from '../common/Spinner';
+import { LogInCredential } from '@/types';
 
 const emptyUserCredential: LogInCredential = {
     email: '',
@@ -17,7 +17,7 @@ const emptyUserCredential: LogInCredential = {
 
 const SignInForm = () => {
     const router = useRouter();
-    const { onSignIn } = useAuth();
+    const { onLogIn } = useAuth();
     const [logInCredential, setLogInCredential] =
         useState<LogInCredential>(emptyUserCredential);
     const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -42,7 +42,7 @@ const SignInForm = () => {
         e.preventDefault();
         try {
             setIsLoggingIn(true);
-            await toast.promise(onSignIn(logInCredential), {
+            await toast.promise(onLogIn(logInCredential), {
                 loading: 'Logging in...',
                 success: <b className='text-sm'>Logged in successfully!</b>,
                 error: (err) => <span className='text-sm'>{err.message}</span>,

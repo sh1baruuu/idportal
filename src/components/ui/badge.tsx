@@ -1,5 +1,5 @@
-import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
+import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
@@ -16,11 +16,14 @@ const badgeVariants = cva(
           "border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80",
         outline: "text-foreground",
         inProgress: "border-blue-500/30 bg-blue-500/10 text-blue-500",
-        readyForPrinting: "border-yellow-400/30 bg-yellow-400/20 text-yellow-500",
-        partiallyPrinted: "border-orange-500/30 bg-orange-500/20 text-orange-500",
-        issues: "border-red-500/30 bg-red-500/20 text-red-500",
-        completed: "border-green-500/30 bg-green-500/20 text-green-500",
-        notStarted: "border-gray-500/30 bg-gray-500/10 text-gray-500",
+        readyForPrinting: "border-yellow-400/30 text-yellow-500",
+        partiallyPrinted: "border-orange-500/30 text-orange-500",
+        issues: "border-red-500/30 text-red-500",
+        completed: "border-green-500/30 text-green-500",
+        notStarted: "border-gray-500/30 text-gray-500",
+        notApplicable: "border-transparent text-muted-foreground",
+        paid: "border-transparent text-green-500",
+        unpaid: "border-transparent text-red-400",
       },
     },
     defaultVariants: {
@@ -40,13 +43,3 @@ function Badge({ className, variant, ...props }: BadgeProps) {
 }
 
 export { Badge, badgeVariants }
-
-
-
-
-// In Progress: When registration is ongoing and IDs are being processed.
-// Ready for Printing: When registration is complete and IDs are ready to be printed.
-// Partially Printed: When some IDs have been printed but not all.
-// Issues: When there are problems or delays in the registration or printing process.
-// Completed: Synonym for "Printed," indicating all IDs in the barangay are done.
-// Not Started: No registration activities have begun for the barangay.

@@ -5,6 +5,15 @@ export interface PaymentStatuses {
 
 export const paymentStatuses: PaymentStatuses[] = [
     { label: 'Paid', value: 'paid' },
-    { label: 'Unpaid', value: 'unpaid' },
-    { label: 'N/A', value: 'notApplicable' }
+    { label: 'Not Paid', value: 'unpaid' },
+    { label: '-', value: 'notApplicable' }
 ]
+
+
+
+export function getPaymentStatusLabel(value: string): string | undefined {
+    const option = paymentStatuses.find(option => option.value === value);
+    return option?.label;
+}
+
+        

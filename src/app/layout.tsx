@@ -1,10 +1,12 @@
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { AuthProvider } from '@/context/AuthProvider';
+import { TRCPProvider } from '@/context/TRPCProvider';
+import { cn } from '@/lib/utils';
+import '@/styles/globals.css';
 import type { Metadata } from 'next';
 import { Inter as FontSans } from 'next/font/google';
-import '@/styles/globals.css';
-import { AuthProvider } from '@/context/AuthProvider';
 import { Toaster } from 'react-hot-toast';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
+import { Toaster as ShadToaster } from '@/components/ui/toaster';
 
 const fontSans = FontSans({
     subsets: ['latin'],
@@ -20,6 +22,12 @@ interface Props {
     children: React.ReactNode;
 }
 
+const toastOptions = {
+    style: {
+        maxWidth: 'fit-content',
+    },
+};
+
 export default function RootLayout({ children }: Readonly<Props>) {
     return (
         <html lang='en'>
@@ -30,16 +38,13 @@ export default function RootLayout({ children }: Readonly<Props>) {
                 )}
             >
                 <AuthProvider>
-                    <TooltipProvider>
-                        <Toaster
-                            toastOptions={{
-                                style: {
-                                    maxWidth: 'fit-content',
-                                },
-                            }}
-                        />
-                        {children}
-                    </TooltipProvider>
+                    <TRCPProvider>
+                        <TooltipProvider>
+                            <Toaster toastOptions={toastOptions} />
+                            <ShadToaster />
+                            {children}
+                        </TooltipProvider>
+                    </TRCPProvider>
                 </AuthProvider>
             </body>
         </html>
