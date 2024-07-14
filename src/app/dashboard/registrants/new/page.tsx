@@ -23,6 +23,7 @@ import {
 import { cn } from '@/lib/utils';
 import { z } from 'zod';
 
+import { trpc } from '@/app/_trpc/client';
 import { Badge } from '@/components/ui/badge';
 import {
     Card,
@@ -50,44 +51,98 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { toast } from '@/components/ui/use-toast';
-import { Tricycle } from '@/types';
-import { FormSchema, TricycleSchema } from '@/types/schema';
+import { ApplicantFormSchema, TricycleSchema } from '@/types/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 
-const emptyTricycle = {
-    name: '',
-    engineNo: '',
-    serialChassisNo: '',
-    plateOrStickerNo: '',
-};
-
 export default function AddRegistrantPage() {
-    const [newTricycle, setNewTricycle] = useState<Tricycle>(emptyTricycle);
-    const [isDriverOperator, setIsDriverOperator] = useState<boolean>(false);
-    const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
-    const form = useForm<z.infer<typeof FormSchema>>({
+    const applicantForm = useForm<z.infer<typeof ApplicantFormSchema>>({
         defaultValues: {
+            applicationNo: '',
             applicationType: 'Driver/Operator',
             fullname: '',
             address: '',
             contactNo: '',
             licenseNo: '',
-            applicationDate: new Date(),
+            applicationDate: new Date().toLocaleString(),
             tricycles: [],
             driverName: '',
             driverLicenseNo: '',
         },
-        resolver: zodResolver(FormSchema),
+        resolver: zodResolver(ApplicantFormSchema),
     });
 
-    const { handleSubmit, control, setValue, watch } = form;
+    const { handleSubmit, control, setValue, watch, reset } = applicantForm;
 
-    const applicationType = watch('applicationType');
-    const fullname = watch('fullname');
-    const licenseNo = watch('licenseNo');
+    const { data, refetch } = trpc.countApplicant.useQuery();
+    const addApplicant = trpc.addApplicant.useMutation({
+        onError: (error) => {
+            if (error.message.includes('license_no_unique')) {
+                return toast({
+                    variant: 'destructive',
+                    title: 'Applicant Already Registered',
+                    description:
+                        'An applicant with this license number already exists. Please check the details and try again.',
+                });
+            }
+            toast({
+                variant: 'destructive',
+                title: 'Uh oh! Something went wrong.',
+                description: 'There was a problem with your request.',
+            });
+        },
+        onSuccess: () => {
+            toast({
+                title: 'New Applicant Added',
+                description: 'The applicant has been successfully added.',
+            });
+            reset();
+        },
+        onSettled: () => {
+            refetch();
+        },
+    });
+
+    const newTricycle = useForm<z.infer<typeof TricycleSchema>>({
+        defaultValues: {
+            makeOrBrand: '',
+            engineNo: '',
+            chassisNo: '',
+            plateOrStickerNo: '',
+        },
+        resolver: zodResolver(TricycleSchema),
+    });
+
+    // Generate applicant number
+    useEffect(() => {
+        const uaid = (number: any): string => {
+            const paddedNumber = (++number)?.toString().padStart(4, '0');
+
+            return `APP-${paddedNumber}`;
+        };
+        if (data) {
+            setValue('applicationNo', uaid(data));
+        }
+    }, [data]);
+
+    const [isDriverOperator, setIsDriverOperator] = useState<boolean>(false);
+
+    const {
+        formState: { errors },
+        trigger,
+        clearErrors,
+        getValues,
+    } = newTricycle;
+
+    const { applicationType, fullname, licenseNo } = watch();
+    const { append, fields, remove } = useFieldArray({
+        control,
+        name: 'tricycles',
+    });
+
+    const { makeOrBrand, engineNo, chassisNo, plateOrStickerNo } =
+        newTricycle.watch();
 
     useEffect(() => {
         if (applicationType === 'Driver/Operator') {
@@ -101,58 +156,44 @@ export default function AddRegistrantPage() {
         }
     }, [applicationType, fullname, licenseNo, setValue]);
 
-    const { append, fields, remove } = useFieldArray({
-        control,
-        name: 'tricycles',
-    });
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { value, name } = e.target;
-        setNewTricycle((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
+    useEffect(() => {
+        if (makeOrBrand.length > 0) clearErrors('makeOrBrand');
+        if (engineNo.length > 0) clearErrors('engineNo');
+        if (chassisNo.length > 0) clearErrors('chassisNo');
+        if (plateOrStickerNo.length > 0) clearErrors('plateOrStickerNo');
+    }, [makeOrBrand, engineNo, chassisNo, plateOrStickerNo, clearErrors]);
 
     const addTricycle = () => {
-        try {
-            const validatedTricycle = TricycleSchema.parse(newTricycle);
-            console.dir(validatedTricycle);
-            append(newTricycle);
-            setNewTricycle({
-                name: '',
-                engineNo: '',
-                serialChassisNo: '',
-                plateOrStickerNo: '',
-            });
-        } catch (error) {
-            if (error instanceof z.ZodError) {
-                const formattedErrors: { [key: string]: string } = {};
-                error.errors.forEach((err) => {
-                    if (err.path) {
-                        formattedErrors[err.path[0]] = err.message;
-                    }
-                });
-                setErrors(formattedErrors);
-            }
+        // Validate newTricycle fields
+        trigger();
+
+        // Add new tricycle to tricycles if no error
+        if (
+            makeOrBrand.length > 0 &&
+            engineNo.length > 0 &&
+            plateOrStickerNo.length > 0 &&
+            chassisNo.length > 0
+        ) {
+            append(getValues());
+            newTricycle.reset();
         }
     };
 
-    const onSubmit = (data: z.infer<typeof FormSchema>) => {
-        toast({
-            title: 'You submitted the following values:',
-            description: (
-                <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-                    <code className='text-white'>
-                        {JSON.stringify(data, null, 2)}
-                    </code>
-                </pre>
-            ),
-        });
+    useEffect(() => {
+        console.log(addApplicant.isPending);
+        
+    }, [addApplicant])
+
+    const onSubmit = (data: z.infer<typeof ApplicantFormSchema>) => {
+        try {
+            addApplicant.mutate(data);
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (
-        <Form {...form}>
+        <Form {...applicantForm}>
             <form
                 onSubmit={handleSubmit(onSubmit)}
                 className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'
@@ -169,7 +210,7 @@ export default function AddRegistrantPage() {
                             <span className='sr-only'>Back</span>
                         </Button>
                         <h1 className='flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0'>
-                            New Applicant
+                            {'NEW APPLICANT'}
                         </h1>
                         <Badge variant='outline' className='ml-auto sm:ml-0'>
                             {applicationType}
@@ -396,9 +437,9 @@ export default function AddRegistrantPage() {
                                     {fields?.map(
                                         (
                                             {
-                                                name,
+                                                makeOrBrand,
                                                 engineNo,
-                                                serialChassisNo,
+                                                chassisNo,
                                                 plateOrStickerNo,
                                             },
                                             i
@@ -406,13 +447,13 @@ export default function AddRegistrantPage() {
                                             return (
                                                 <TableRow key={i}>
                                                     <TableCell className='font-semibold text-nowrap w-32'>
-                                                        {name}
+                                                        {makeOrBrand}
                                                     </TableCell>
                                                     <TableCell>
                                                         {engineNo}
                                                     </TableCell>
                                                     <TableCell>
-                                                        {serialChassisNo}
+                                                        {chassisNo}
                                                     </TableCell>
                                                     <TableCell>
                                                         {plateOrStickerNo}
@@ -435,20 +476,24 @@ export default function AddRegistrantPage() {
                                     <TableRow className='mt-10'>
                                         <TableCell className='w-52'>
                                             <Label
-                                                htmlFor='name'
+                                                htmlFor='makeOrBrand'
                                                 className='sr-only'
                                             >
                                                 Make/Brand
                                             </Label>
                                             <Input
-                                                id='name'
-                                                name='name'
-                                                type='text'
-                                                placeholder='Enter Name'
-                                                value={newTricycle.name}
-                                                onChange={handleChange}
+                                                {...newTricycle.register(
+                                                    'makeOrBrand',
+                                                    {
+                                                        required: true,
+                                                    }
+                                                )}
+                                                placeholder='Enter plate/sticker no.'
+                                                className={
+                                                    errors.makeOrBrand &&
+                                                    'outline outline-1 animate-shake placeholder:text-destructive outline-destructive'
+                                                }
                                             />
-                                            {errors.name && <FormMessage >{errors.name}</FormMessage>}
                                         </TableCell>
                                         <TableCell>
                                             <Label
@@ -458,30 +503,38 @@ export default function AddRegistrantPage() {
                                                 Engine No.
                                             </Label>
                                             <Input
-                                                id='engineNo'
-                                                name='engineNo'
-                                                type='text'
-                                                placeholder='Enter Engine No.'
-                                                value={newTricycle.engineNo}
-                                                onChange={handleChange}
+                                                {...newTricycle.register(
+                                                    'engineNo',
+                                                    {
+                                                        required: true,
+                                                    }
+                                                )}
+                                                placeholder='Enter plate/sticker no.'
+                                                className={
+                                                    errors.engineNo &&
+                                                    'outline outline-1 animate-shake placeholder:text-destructive outline-destructive'
+                                                }
                                             />
                                         </TableCell>
                                         <TableCell>
                                             <Label
-                                                htmlFor='serialChassisNo'
+                                                htmlFor='chassisNo'
                                                 className='sr-only'
                                             >
                                                 Chassis No.
                                             </Label>
                                             <Input
-                                                id='serialChassisNo'
-                                                name='serialChassisNo'
-                                                type='text'
-                                                placeholder='Enter chassis no.'
-                                                value={
-                                                    newTricycle.serialChassisNo
+                                                {...newTricycle.register(
+                                                    'chassisNo',
+                                                    {
+                                                        required: true,
+                                                    }
+                                                )}
+                                                placeholder='Enter plate/sticker no.'
+                                                className={
+                                                    errors.chassisNo &&
+                                                    'outline outline-1 animate-shake placeholder:text-destructive outline-destructive'
                                                 }
-                                                onChange={handleChange}
                                             />
                                         </TableCell>
                                         <TableCell>
@@ -489,17 +542,20 @@ export default function AddRegistrantPage() {
                                                 htmlFor='plateOrStickerNo'
                                                 className='sr-only'
                                             >
-                                                Sticker No.
+                                                Plate/Sticker No.
                                             </Label>
                                             <Input
-                                                id='plateOrStickerNo'
-                                                name='plateOrStickerNo'
-                                                type='text'
+                                                {...newTricycle.register(
+                                                    'plateOrStickerNo',
+                                                    {
+                                                        required: true,
+                                                    }
+                                                )}
                                                 placeholder='Enter plate/sticker no.'
-                                                value={
-                                                    newTricycle.plateOrStickerNo
+                                                className={
+                                                    errors.plateOrStickerNo &&
+                                                    'outline outline-1 animate-shake placeholder:text-destructive outline-destructive'
                                                 }
-                                                onChange={handleChange}
                                             />
                                         </TableCell>
                                     </TableRow>
@@ -571,7 +627,7 @@ export default function AddRegistrantPage() {
                             Discard
                         </Button>
                         <Button type='submit' size='sm'>
-                            Save Applicant
+                            {addApplicant.isPending ? 'Saving' : ' Save Applicant'}
                         </Button>
                     </div>
                 </div>
