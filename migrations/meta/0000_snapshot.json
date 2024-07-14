@@ -1,0 +1,147 @@
+{
+  "id": "4246f20c-8956-40ad-a396-7415af38df1d",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.applicant_tb": {
+      "name": "applicant_tb",
+      "schema": "",
+      "columns": {
+        "application_no": {
+          "name": "application_no",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "application_type": {
+          "name": "application_type",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fullname": {
+          "name": "fullname",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "address": {
+          "name": "address",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "contact_no": {
+          "name": "contact_no",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sss/license_no": {
+          "name": "sss/license_no",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "application_date": {
+          "name": "application_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "applicant_tb_sss/license_no_unique": {
+          "name": "applicant_tb_sss/license_no_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "sss/license_no"
+          ]
+        }
+      }
+    },
+    "public.tricycle_tb": {
+      "name": "tricycle_tb",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "make_or_brand": {
+          "name": "make_or_brand",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "engine_no": {
+          "name": "engine_no",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "chassis_no": {
+          "name": "chassis_no",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "plate_sticker_no": {
+          "name": "plate_sticker_no",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "driver_name": {
+          "name": "driver_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "driver_license_no": {
+          "name": "driver_license_no",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "applicant_id": {
+          "name": "applicant_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "tricycle_tb_applicant_id_applicant_tb_application_no_fk": {
+          "name": "tricycle_tb_applicant_id_applicant_tb_application_no_fk",
+          "tableFrom": "tricycle_tb",
+          "tableTo": "applicant_tb",
+          "columnsFrom": [
+            "applicant_id"
+          ],
+          "columnsTo": [
+            "application_no"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

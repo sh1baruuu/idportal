@@ -39,6 +39,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
+    "dayjs": "^1.11.11",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.31.2",
     "fabricjs-react": "^1.2.2",

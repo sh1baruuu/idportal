@@ -5,8 +5,8 @@ export interface LogInCredential {
 }
 
 export interface Tricycle {
-    name: string;
+    makeOrBrand: string;
     engineNo: string;
-    serialChassisNo: string;
+    chassisNo: string;
     plateOrStickerNo: string;
 }
