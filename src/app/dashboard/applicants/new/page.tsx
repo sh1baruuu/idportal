@@ -20,7 +20,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
-import { cn } from '@/lib/utils';
+import { cn, handleInput, handleKeyDown } from '@/lib/utils';
 import { z } from 'zod';
 
 import { trpc } from '@/app/_trpc/client';
@@ -55,8 +55,14 @@ import { ApplicantFormSchema, TricycleSchema } from '@/types/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 
 export default function AddRegistrantPage() {
+    const router = useRouter();
+    const countApplicant = trpc.countApplicant.useQuery();
+    const addTricycles = trpc.addTricycles.useMutation({});
+    const addApplicant = trpc.addApplicant.useMutation({});
+
     const applicantForm = useForm<z.infer<typeof ApplicantFormSchema>>({
         defaultValues: {
             applicationNo: '',
@@ -73,88 +79,91 @@ export default function AddRegistrantPage() {
         resolver: zodResolver(ApplicantFormSchema),
     });
 
-    const { handleSubmit, control, setValue, watch, reset } = applicantForm;
-
-    const { data, refetch } = trpc.countApplicant.useQuery();
-    const addApplicant = trpc.addApplicant.useMutation({
-        onError: (error) => {
-            if (error.message.includes('license_no_unique')) {
-                return toast({
-                    variant: 'destructive',
-                    title: 'Applicant Already Registered',
-                    description:
-                        'An applicant with this license number already exists. Please check the details and try again.',
-                });
-            }
-            toast({
-                variant: 'destructive',
-                title: 'Uh oh! Something went wrong.',
-                description: 'There was a problem with your request.',
-            });
-        },
-        onSuccess: () => {
-            toast({
-                title: 'New Applicant Added',
-                description: 'The applicant has been successfully added.',
-            });
-            reset();
-        },
-        onSettled: () => {
-            refetch();
-        },
-    });
-
     const newTricycle = useForm<z.infer<typeof TricycleSchema>>({
         defaultValues: {
             makeOrBrand: '',
             engineNo: '',
             chassisNo: '',
             plateOrStickerNo: '',
+            driverName: '',
+            driverLicenseNo: '',
+            applicantId: '',
         },
         resolver: zodResolver(TricycleSchema),
     });
 
-    // Generate applicant number
+    const {
+        applicationNo,
+        applicationType,
+        fullname,
+        licenseNo,
+        driverName,
+        driverLicenseNo,
+        tricycles,
+    } = applicantForm.watch();
+
+    const { makeOrBrand, engineNo, chassisNo, plateOrStickerNo } =
+        newTricycle.watch();
+
+    const { append, fields, remove } = useFieldArray({
+        control: applicantForm.control,
+        name: 'tricycles',
+    });
+
+    const [isDriverOperator, setIsDriverOperator] = useState<boolean>(false);
+
+    const {
+        formState: { errors },
+        clearErrors,
+    } = newTricycle;
+
+    useEffect(() => {
+        newTricycle.setValue('driverName', driverName);
+        newTricycle.setValue('driverLicenseNo', driverLicenseNo);
+        newTricycle.setValue('applicantId', applicationNo);
+    }, [
+        driverName,
+        driverLicenseNo,
+        applicationNo,
+        applicationType,
+        tricycles,
+    ]);
+
     useEffect(() => {
         const uaid = (number: any): string => {
             const paddedNumber = (++number)?.toString().padStart(4, '0');
 
             return `APP-${paddedNumber}`;
         };
-        if (data) {
-            setValue('applicationNo', uaid(data));
+        if (countApplicant.data) {
+            applicantForm.setValue('applicationNo', uaid(countApplicant.data));
         }
-    }, [data]);
-
-    const [isDriverOperator, setIsDriverOperator] = useState<boolean>(false);
-
-    const {
-        formState: { errors },
-        trigger,
-        clearErrors,
-        getValues,
-    } = newTricycle;
-
-    const { applicationType, fullname, licenseNo } = watch();
-    const { append, fields, remove } = useFieldArray({
-        control,
-        name: 'tricycles',
-    });
-
-    const { makeOrBrand, engineNo, chassisNo, plateOrStickerNo } =
-        newTricycle.watch();
+    }, [countApplicant.data]);
 
     useEffect(() => {
         if (applicationType === 'Driver/Operator') {
-            setValue('driverName', fullname);
-            setValue('driverLicenseNo', licenseNo);
+            applicantForm.setValue('driverName', fullname);
+            applicantForm.setValue('driverLicenseNo', licenseNo);
             setIsDriverOperator(true);
         } else {
+            applicantForm.setValue('driverName', '');
+            applicantForm.setValue('driverLicenseNo', '');
             setIsDriverOperator(false);
-            setValue('driverName', '');
-            setValue('driverLicenseNo', '');
         }
-    }, [applicationType, fullname, licenseNo, setValue]);
+    }, [
+        applicationType,
+        fullname,
+        licenseNo,
+        applicantForm.setValue,
+        applicationNo,
+    ]);
+
+    // useEffect(() => {
+    //     if (applicationType === 'Operator') {
+    //         setValue('driverName', '');
+    //         setValue('driverLicenseNo', '');
+    //     }
+    // }, [applicationType]);
 
     useEffect(() => {
         if (makeOrBrand.length > 0) clearErrors('makeOrBrand');
@@ -164,38 +173,55 @@ export default function AddRegistrantPage() {
     }, [makeOrBrand, engineNo, chassisNo, plateOrStickerNo, clearErrors]);
 
     const addTricycle = () => {
-        // Validate newTricycle fields
-        trigger();
+        newTricycle.trigger();
 
-        // Add new tricycle to tricycles if no error
         if (
             makeOrBrand.length > 0 &&
             engineNo.length > 0 &&
             plateOrStickerNo.length > 0 &&
             chassisNo.length > 0
         ) {
-            append(getValues());
+            append(newTricycle.getValues());
             newTricycle.reset();
         }
     };
 
-    useEffect(() => {
-        console.log(addApplicant.isPending);
-        
-    }, [addApplicant])
-
-    const onSubmit = (data: z.infer<typeof ApplicantFormSchema>) => {
+    const onSubmit = async (data: z.infer<typeof ApplicantFormSchema>) => {
         try {
-            addApplicant.mutate(data);
-        } catch (error) {
-            console.log(error);
+            await addApplicant.mutateAsync(data);
+            await addTricycles.mutateAsync(data.tricycles);
+
+            toast({
+                title: 'New Applicant Added',
+                description: 'The applicant has been successfully added.',
+            });
+
+            applicantForm.reset();
+            newTricycle.reset();
+        } catch (error: any) {
+            if (error.message.includes('license_no_unique')) {
+                return toast({
+                    variant: 'destructive',
+                    title: 'Applicant Already Registered',
+                    description:
+                        'An applicant with this license number already exists. Please check the details and try again.',
+                });
+            }
+
+            toast({
+                variant: 'destructive',
+                title: 'Uh oh! Something went wrong.',
+                description: 'There was a problem with your request.',
+            });
+        } finally {
+            countApplicant.refetch();
         }
     };
 
     return (
         <Form {...applicantForm}>
             <form
-                onSubmit={handleSubmit(onSubmit)}
+                onSubmit={applicantForm.handleSubmit(onSubmit)}
                 className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'
             >
                 <div className='mx-auto grid max-w-[59rem] flex-1 auto-rows-max gap-4'>
@@ -204,6 +230,7 @@ export default function AddRegistrantPage() {
                             type='button'
                             variant='outline'
                             size='icon'
+                            onClick={() => router.push('/dashboard/applicants')}
                             className='h-7 w-7'
                         >
                             <ChevronLeft className='h-4 w-4' />
@@ -219,12 +246,20 @@ export default function AddRegistrantPage() {
                             <Button variant='outline' size='sm'>
                                 Discard
                             </Button>
-                            <Button size='sm'>Save Product</Button>
+                            <Button disabled={addApplicant.isPending} size='sm'>
+                                {addApplicant.isPending
+                                    ? 'Saving...'
+                                    : 'Save Applicant'}
+                            </Button>
                         </div>
                     </div>
                     <Card>
                         <CardHeader>
-                            <CardTitle>Application Details</CardTitle>
+                            <CardTitle>
+                                {addApplicant.isPending
+                                    ? 'Loading'
+                                    : 'Application Details'}
+                            </CardTitle>
                             <CardDescription>
                                 Please fill in the following application
                                 details:
@@ -233,20 +268,23 @@ export default function AddRegistrantPage() {
                         <CardContent>
                             <div className='grid md:grid-cols-4 lg:grid-cols-3 gap-6'>
                                 <FormField
-                                    control={control}
+                                    control={applicantForm.control}
                                     name='applicationType'
                                     render={({ field }) => (
                                         <FormItem className='flex flex-col col-span-2'>
-                                            <FormLabel>
-                                                Application Permit For{' '}
+                                            <FormLabel htmlFor='applicationType'>
+                                                Application For{' '}
                                             </FormLabel>
                                             <Select
                                                 onValueChange={field.onChange}
                                                 defaultValue={field.value}
+                                                disabled={
+                                                    addApplicant.isPending
+                                                }
                                             >
                                                 <SelectTrigger
-                                                    id='status'
                                                     aria-label='Select type'
+                                                    id='applicationType'
                                                 >
                                                     <SelectValue placeholder='Select type' />
                                                 </SelectTrigger>
@@ -264,16 +302,22 @@ export default function AddRegistrantPage() {
                                     )}
                                 />
                                 <FormField
-                                    control={control}
+                                    control={applicantForm.control}
                                     name='applicationDate'
+                                    disabled={addApplicant.isPending}
                                     render={({ field }) => (
                                         <FormItem className='flex flex-col'>
-                                            <FormLabel>Date</FormLabel>
+                                            <FormLabel htmlFor='applicationDate'>
+                                                Date
+                                            </FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
-                                                    <FormControl>
+                                                    <FormControl id='applicationDate'>
                                                         <Button
                                                             variant={'outline'}
+                                                            disabled={
+                                                                addApplicant.isPending
+                                                            }
                                                             className={cn(
                                                                 'w-[240px] pl-3 text-left font-normal',
                                                                 !field.value &&
@@ -300,10 +344,22 @@ export default function AddRegistrantPage() {
                                                 >
                                                     <Calendar
                                                         mode='single'
-                                                        selected={field.value}
-                                                        onSelect={
-                                                            field.onChange
-                                                        }
+                                                        selected={
+                                                            field.value
+                                                                ? new Date(field.value)
+                                                                : null
+                                                        } // Convert string to Date for Calendar component
+                                                        onSelect={(date: Date) => {
+                                                            if (date) {
+                                                                const dateString =
+                                                                    date.toLocaleDateString(
+                                                                        'en-CA'
+                                                                    ); // Convert Date to string in 'YYYY-MM-DD' format
+                                                                field.onChange(
+                                                                    dateString
+                                                                );
+                                                            }
+                                                        }}
                                                         disabled={(
                                                             date: Date
                                                         ) =>
@@ -336,14 +392,23 @@ export default function AddRegistrantPage() {
                         <CardContent>
                             <div className='grid gap-6'>
                                 <FormField
-                                    control={control}
+                                    control={applicantForm.control}
                                     name='fullname'
+                                    disabled={addApplicant.isPending}
                                     render={({ field }) => (
                                         <FormItem className='flex flex-col'>
-                                            <FormLabel>Fullname</FormLabel>
+                                            <FormLabel htmlFor='fullname'>
+                                                Fullname{' '}
+                                                <span className='text-muted-foreground italic text-xs'>
+                                                    (First Name Middle Initial
+                                                    Last Name)
+                                                </span>
+                                            </FormLabel>
                                             <Input
                                                 {...field}
+                                                autoComplete='off'
                                                 type='text'
+                                                id='fullname'
                                                 className='w-full'
                                             />
                                             <FormMessage />
@@ -351,11 +416,12 @@ export default function AddRegistrantPage() {
                                     )}
                                 />
                                 <FormField
-                                    control={control}
+                                    control={applicantForm.control}
                                     name='address'
+                                    disabled={addApplicant.isPending}
                                     render={({ field }) => (
                                         <FormItem className='flex flex-col'>
-                                            <FormLabel>
+                                            <FormLabel htmlFor='address'>
                                                 Address{' '}
                                                 <span className='text-muted-foreground italic text-xs'>
                                                     (No. Street, Barangay,
@@ -364,7 +430,9 @@ export default function AddRegistrantPage() {
                                             </FormLabel>
                                             <Input
                                                 {...field}
+                                                autoComplete='off'
                                                 type='text'
+                                                id='address'
                                                 className='w-full'
                                             />
                                             <FormMessage />
@@ -373,16 +441,19 @@ export default function AddRegistrantPage() {
                                 />
                                 <div className='md:grid-cols-2 gap-6 grid pb-2'>
                                     <FormField
-                                        control={control}
+                                        control={applicantForm.control}
                                         name='licenseNo'
+                                        disabled={addApplicant.isPending}
                                         render={({ field }) => (
                                             <FormItem className='flex flex-col'>
-                                                <FormLabel>
+                                                <FormLabel htmlFor='licenseNo'>
                                                     License No.
                                                 </FormLabel>
                                                 <Input
                                                     {...field}
+                                                    autoComplete='off'
                                                     type='text'
+                                                    id='licenseNo'
                                                     className='w-full'
                                                 />
                                                 <FormMessage />
@@ -390,16 +461,22 @@ export default function AddRegistrantPage() {
                                         )}
                                     />
                                     <FormField
-                                        control={control}
+                                        control={applicantForm.control}
                                         name='contactNo'
+                                        disabled={addApplicant.isPending}
                                         render={({ field }) => (
                                             <FormItem className='flex flex-col'>
-                                                <FormLabel>
+                                                <FormLabel htmlFor='contactNo'>
                                                     Contact No.
                                                 </FormLabel>
                                                 <Input
                                                     {...field}
+                                                    autoComplete='off'
                                                     type='text'
+                                                    id='contactNo'
+                                                    maxLength={11}
+                                                    onInput={handleInput}
+                                                    onKeyDown={handleKeyDown}
                                                     className='w-full'
                                                 />
                                                 <FormMessage />
@@ -488,6 +565,7 @@ export default function AddRegistrantPage() {
                                                         required: true,
                                                     }
                                                 )}
+                                                id='makeOrBrand'
                                                 placeholder='Enter plate/sticker no.'
                                                 className={
                                                     errors.makeOrBrand &&
@@ -509,6 +587,7 @@ export default function AddRegistrantPage() {
                                                         required: true,
                                                     }
                                                 )}
+                                                id='engineNo'
                                                 placeholder='Enter plate/sticker no.'
                                                 className={
                                                     errors.engineNo &&
@@ -530,6 +609,7 @@ export default function AddRegistrantPage() {
                                                         required: true,
                                                     }
                                                 )}
+                                                id='chassisNo'
                                                 placeholder='Enter plate/sticker no.'
                                                 className={
                                                     errors.chassisNo &&
@@ -551,6 +631,7 @@ export default function AddRegistrantPage() {
                                                         required: true,
                                                     }
                                                 )}
+                                                id='plateOrStickerNo'
                                                 placeholder='Enter plate/sticker no.'
                                                 className={
                                                     errors.plateOrStickerNo &&
@@ -587,8 +668,9 @@ export default function AddRegistrantPage() {
                             <CardContent>
                                 <div className='md:grid-cols-2 gap-6 grid pb-2'>
                                     <FormField
-                                        control={control}
+                                        control={applicantForm.control}
                                         name='driverName'
+                                        disabled={addApplicant.isPending}
                                         render={({ field }) => (
                                             <FormItem className='flex flex-col'>
                                                 <FormLabel>Fullname</FormLabel>
@@ -602,8 +684,9 @@ export default function AddRegistrantPage() {
                                         )}
                                     />
                                     <FormField
-                                        control={control}
+                                        control={applicantForm.control}
                                         name='driverLicenseNo'
+                                        disabled={addApplicant.isPending}
                                         render={({ field }) => (
                                             <FormItem className='flex flex-col'>
                                                 <FormLabel>
@@ -627,7 +710,7 @@ export default function AddRegistrantPage() {
                             Discard
                         </Button>
                         <Button type='submit' size='sm'>
-                            {addApplicant.isPending ? 'Saving' : ' Save Applicant'}
+                            Save Applicant
                         </Button>
                     </div>
                 </div>

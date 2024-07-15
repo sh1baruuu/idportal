@@ -17,11 +17,13 @@ export const tricycle = pgTable('tricycle_tb', {
     makeOrBrand: varchar('make_or_brand').notNull(),
     engineNo: varchar('engine_no').notNull(),
     chassisNo: varchar('chassis_no').notNull(),
-    plateStickerNo: varchar('plate_sticker_no').notNull(),
+    plateOrStickerNo: varchar('plate_sticker_no').notNull(),
     driverName: varchar('driver_name').notNull(),
-    driverLicenseNo: varchar('driver_license_no').notNull(),
-    applicantID: varchar('applicant_id').references(() => applicant.applicationNo).notNull(),
+    driverLicenseNo: varchar('driver_license_no'),
+    applicantId: varchar('applicant_id').references(() => applicant.applicationNo).notNull(),
 });
+
+
 
 
 

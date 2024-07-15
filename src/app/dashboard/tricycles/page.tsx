@@ -6,29 +6,23 @@ import {
     Card,
     CardContent,
     CardDescription,
+    CardFooter,
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { File } from 'lucide-react';
+import { ChevronLeft, ChevronRight, File } from 'lucide-react';
 import { useState } from 'react';
-import BarangayTable from '../_components/BarangayTable';
 import FilterDropdownMenu from '../_components/FilterDropdownMenu';
 import SortDropdownMenu from '../_components/SortDropdownMenu';
+import TricycleTable from '../_components/TricycleTable';
 
-export default function tricycleTab() {
-    // const { isLoading, data, error } = trpc.getAllBarangay.useQuery();
+export default function TricyclesTab() {
+    const allTricycles = trpc.allTricycles.useQuery();
 
     const [selectedFilter, setSelectedFilter] = useState<string>('');
     const [selectedSort, setSelectedSort] = useState<string>('AZ');
 
-    // if (isLoading) {
-    //     return <h1>Loading</h1>;
-    // }
-
-    // if (error) {
-    //     return <h1>{error.message}</h1>;
-    // }
 
     return (
         <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3'>
@@ -70,8 +64,34 @@ export default function tricycleTab() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                {/* <BarangayTable barangayLists={data} /> */}
+                                <TricycleTable data={allTricycles.data} />
                             </CardContent>
+                            <CardFooter>
+                            <div className='text-xs text-muted-foreground'>
+                                Showing <strong>1-10</strong> of{' '}
+                                <strong>32</strong> registrants
+                            </div>
+                            <div className='ml-auto flex gap-3'>
+                                <Button
+                                    size='icon'
+                                    variant='outline'
+                                    className='h-7 w-7'
+                                >
+                                    <ChevronLeft className='h-5 w-5' />
+                                    <span className='sr-only'>
+                                        Previous Order
+                                    </span>
+                                </Button>
+                                <Button
+                                    size='icon'
+                                    variant='outline'
+                                    className='h-7 w-7'
+                                >
+                                    <ChevronRight className='h-5 w-5' />
+                                    <span className='sr-only'>Next Order</span>
+                                </Button>
+                            </div>
+                        </CardFooter>
                         </Card>
                     </div>
                 </Tabs>

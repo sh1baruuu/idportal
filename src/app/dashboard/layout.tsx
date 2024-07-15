@@ -65,9 +65,9 @@ const navItems: NavItems[] = [
         path: '',
     },
     {
-        label: 'Registrants',
+        label: 'Applicants',
         icon: User,
-        path: 'registrants',
+        path: 'applicants',
     },
     {
         label: 'Tricycles',
