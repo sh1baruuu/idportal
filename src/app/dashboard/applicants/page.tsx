@@ -1,76 +1,77 @@
 'use client';
 
-import {
-    ChevronLeft,
-    ChevronRight,
-    File,
-    ListFilter,
-    PlusCircle,
-} from 'lucide-react';
-
+import { File, PlusCircle } from 'lucide-react';
 import { trpc } from '@/app/_trpc/client';
 import { Button } from '@/components/ui/button';
 import {
     Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
+    CardContent
 } from '@/components/ui/card';
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useRouter } from 'next/navigation';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ApplicationType } from '@/types';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import ApplicantTable from '../_components/ApplicantTable';
+import CardCustomHeader from '../_components/CardCustomHeader';
+import CardCustomFooter from '../_components/CardFooter';
+import EmptyTableIndicator from '../_components/EmptyTableIndicator';
+import SortDropdownMenu from '../_components/SortDropdownMenu';
 
 export default function ApplicantsTab() {
     const router = useRouter();
-    const allApplicants = trpc.allApplicants.useQuery();
+    const searchParams = useSearchParams();
+    const [page, setPage] = useState<number>(1);
+    const [filter, setFilter] = useState<ApplicationType>('All');
+    const [order, setOrder] = useState<string>('');
+    const search = searchParams.get('s');
+    const pageSize = 10;
+
+    const { isLoading, data, refetch } = trpc.getAllApplicants.useQuery({
+        search,
+        page,
+        pageSize,
+        filter,
+        order,
+    });
+
+    const start = (page - 1) * pageSize + 1;
+    const end = Math.min(page * pageSize, data?.total ?? 0);
+    const total = data?.total ?? 0;
+
+    useEffect(() => {
+        setPage(1);
+    }, [filter, search]);
+
+    useEffect(()=>{
+        refetch();
+    }, [])
 
     return (
         <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>
-            <Tabs defaultValue='all'>
+            <Tabs defaultValue='All'>
                 <div className='flex items-center'>
                     <TabsList>
-                        <TabsTrigger value='all'>All</TabsTrigger>
-                        <TabsTrigger value='operator'>Operator</TabsTrigger>
-                        <TabsTrigger value='driver/operator'>Driver/Operator</TabsTrigger>
+                        <TabsTrigger
+                            onClick={() => setFilter('All')}
+                            value='All'
+                        >
+                            All
+                        </TabsTrigger>
+                        <TabsTrigger
+                            onClick={() => setFilter('Operator')}
+                            value='Operator'
+                        >
+                            Operator
+                        </TabsTrigger>
+                        <TabsTrigger
+                            onClick={() => setFilter('Driver/Operator')}
+                            value='Driver/Operator'
+                        >
+                            Driver/Operator
+                        </TabsTrigger>
                     </TabsList>
                     <div className='ml-auto flex items-center gap-2'>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant='outline'
-                                    size='sm'
-                                    className='h-7 gap-1'
-                                >
-                                    <ListFilter className='h-3.5 w-3.5' />
-                                    <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>
-                                        Filter
-                                    </span>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align='end'>
-                                <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuCheckboxItem checked>
-                                    Active
-                                </DropdownMenuCheckboxItem>
-                                <DropdownMenuCheckboxItem>
-                                    Draft
-                                </DropdownMenuCheckboxItem>
-                                <DropdownMenuCheckboxItem>
-                                    Archived
-                                </DropdownMenuCheckboxItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <SortDropdownMenu sort={order} sortBy={setOrder} />
                         <Button
                             size='sm'
                             variant='outline'
@@ -93,46 +94,32 @@ export default function ApplicantsTab() {
                         </Button>
                     </div>
                 </div>
-                <TabsContent value='all'>
-                    <Card x-chunk='dashboard-06-chunk-0'>
-                        <CardHeader>
-                            <CardTitle>Applicants</CardTitle>
-                            <CardDescription>
-                                Manage and view applicant permit records.
-                            </CardDescription>
-                        </CardHeader>
+                <div className='mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'>
+                    <Card>
+                        <CardCustomHeader title='Applicants' description='Manage and view applicant permit records.' />
                         <CardContent>
-                            
-                            {allApplicants.isLoading ? "Loading" : <ApplicantTable data={allApplicants.data} />}
+                            <ApplicantTable
+                                isLoading={isLoading}
+                                data={data?.applicants}
+                                pageSize={pageSize}
+                            />
+                            <EmptyTableIndicator
+                                search={search}
+                                total={total}
+                                isLoading={isLoading}
+                            />
                         </CardContent>
-                        <CardFooter>
-                            <div className='text-xs text-muted-foreground'>
-                                Showing <strong>1-10</strong> of{' '}
-                                <strong>32</strong> registrants
-                            </div>
-                            <div className='ml-auto flex gap-3'>
-                                <Button
-                                    size='icon'
-                                    variant='outline'
-                                    className='h-7 w-7'
-                                >
-                                    <ChevronLeft className='h-5 w-5' />
-                                    <span className='sr-only'>
-                                        Previous Order
-                                    </span>
-                                </Button>
-                                <Button
-                                    size='icon'
-                                    variant='outline'
-                                    className='h-7 w-7'
-                                >
-                                    <ChevronRight className='h-5 w-5' />
-                                    <span className='sr-only'>Next Order</span>
-                                </Button>
-                            </div>
-                        </CardFooter>
+                        <CardCustomFooter
+                            start={start}
+                            end={end}
+                            total={total}
+                            setPage={setPage}
+                            hasNextPage={!data?.hasNextPage}
+                            isFirstPage={data?.isFirstPage}
+                            name='applicants'
+                        />
                     </Card>
-                </TabsContent>
+                </div>
             </Tabs>
         </main>
     );

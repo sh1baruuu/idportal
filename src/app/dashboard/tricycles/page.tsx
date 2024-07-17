@@ -4,45 +4,47 @@ import { trpc } from '@/app/_trpc/client';
 import { Button } from '@/components/ui/button';
 import {
     Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
+    CardContent
 } from '@/components/ui/card';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChevronLeft, ChevronRight, File } from 'lucide-react';
-import { useState } from 'react';
-import FilterDropdownMenu from '../_components/FilterDropdownMenu';
+import { Tabs } from '@/components/ui/tabs';
+import { File } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import CardCustomHeader from '../_components/CardCustomHeader';
+import CardCustomFooter from '../_components/CardFooter';
+import EmptyTableIndicator from '../_components/EmptyTableIndicator';
 import SortDropdownMenu from '../_components/SortDropdownMenu';
 import TricycleTable from '../_components/TricycleTable';
 
 export default function TricyclesTab() {
-    const allTricycles = trpc.allTricycles.useQuery();
+    const searchParams = useSearchParams();
+    const [page, setPage] = useState<number>(1);
+    const [order, setOrder] = useState<string>('');
+    const search = searchParams.get('s');
+    const pageSize = 10;
 
-    const [selectedFilter, setSelectedFilter] = useState<string>('');
-    const [selectedSort, setSelectedSort] = useState<string>('AZ');
+    const { data, isLoading, refetch } = trpc.getAllTricycles.useQuery({
+        search,
+        page,
+        pageSize,
+        order,
+    });
 
+    const start = (page - 1) * pageSize + 1;
+    const end = Math.min(page * pageSize, data?.total ?? 0);
+    const total = data?.total ?? 0;
+
+    useEffect(()=>{
+        refetch();
+    }, [])
 
     return (
         <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3'>
             <div className='grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-3'>
-                <Tabs defaultValue='all'>
+                <Tabs>
                     <div className='flex items-center'>
-                        <TabsList>
-                            <TabsTrigger value='all'>All</TabsTrigger>
-                            <TabsTrigger value='month'>Paid</TabsTrigger>
-                            <TabsTrigger value='year'>Unpaid</TabsTrigger>
-                        </TabsList>
                         <div className='ml-auto flex items-center gap-2'>
-                            <FilterDropdownMenu
-                                selectedFilter={selectedFilter}
-                                setSelectedFilter={setSelectedFilter}
-                            />
-                            <SortDropdownMenu
-                                selectedSort={selectedSort}
-                                setSelectedSort={setSelectedSort}
-                            />
+                            <SortDropdownMenu sort={order} sortBy={setOrder} />
                             <Button
                                 size='sm'
                                 variant='outline'
@@ -57,41 +59,31 @@ export default function TricyclesTab() {
                     </div>
                     <div className='mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'>
                         <Card>
-                            <CardHeader className='px-7'>
-                                <CardTitle>Tricycles</CardTitle>
-                                <CardDescription>
-                                    View and manage the list of registered tricycle.
-                                </CardDescription>
-                            </CardHeader>
+                            <CardCustomHeader
+                                title='Tricycles'
+                                description='View and manage the list of registered tricycle.'
+                            />
                             <CardContent>
-                                <TricycleTable data={allTricycles.data} />
+                                <TricycleTable
+                                    isLoading={isLoading}
+                                    data={data?.tricycles}
+                                    pageSize={pageSize}
+                                />
+                                <EmptyTableIndicator
+                                    search={search}
+                                    total={total}
+                                    isLoading={isLoading}
+                                />
                             </CardContent>
-                            <CardFooter>
-                            <div className='text-xs text-muted-foreground'>
-                                Showing <strong>1-10</strong> of{' '}
-                                <strong>32</strong> registrants
-                            </div>
-                            <div className='ml-auto flex gap-3'>
-                                <Button
-                                    size='icon'
-                                    variant='outline'
-                                    className='h-7 w-7'
-                                >
-                                    <ChevronLeft className='h-5 w-5' />
-                                    <span className='sr-only'>
-                                        Previous Order
-                                    </span>
-                                </Button>
-                                <Button
-                                    size='icon'
-                                    variant='outline'
-                                    className='h-7 w-7'
-                                >
-                                    <ChevronRight className='h-5 w-5' />
-                                    <span className='sr-only'>Next Order</span>
-                                </Button>
-                            </div>
-                        </CardFooter>
+                            <CardCustomFooter
+                                start={start}
+                                end={end}
+                                total={total}
+                                setPage={setPage}
+                                hasNextPage={!data?.hasNextPage}
+                                isFirstPage={data?.isFirstPage}
+                                name='trcycles'
+                            />
                         </Card>
                     </div>
                 </Tabs>

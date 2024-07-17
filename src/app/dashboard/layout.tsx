@@ -2,11 +2,9 @@
 
 import {
     Bike,
-    CreditCard,
     Home,
     LineChart,
     LucideProps,
-    MapPinned,
     Package,
     Package2,
     PanelLeft,
@@ -44,7 +42,8 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useAuth } from '@/context/AuthProvider';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 interface Props {
     children: React.ReactNode;
@@ -82,12 +81,32 @@ const navItems: NavItems[] = [
 ];
 
 export default function DashboardLayout({ children }: Readonly<Props>) {
+    const searchParams = useSearchParams();
     const pathname = usePathname();
     const router = useRouter();
+    const [search, setSearch] = useState<string>('');
     const { onSignOut } = useAuth();
 
-    const pathArr = pathname.split('/').filter((path) => path !== '');
+    useEffect(() => {
+        const params = new URLSearchParams(searchParams);
+        if (search) {
+            params.set('s', search);
+        } else {
+            params.delete('s');
+        }
 
+        const delayDebounceFn = setTimeout(() => {
+            router.replace(`${pathname}?${params.toString()}`);
+        }, 300); 
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [search]);
+
+    useEffect(() => {
+        setSearch('');
+    }, [pathname]);
+
+    const pathArr = pathname.split('/').filter((path) => path !== '');
     const currentPath =
         pathArr[pathArr.length - 1] === 'dashboard'
             ? ''
@@ -96,6 +115,10 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
         pathArr.length == 1
             ? 'home'
             : navItems.find((item) => item.path === currentPath)?.label || '';
+
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearch(e.target.value);
+    };
 
     const signOut = async (): Promise<void> => {
         try {
@@ -237,6 +260,8 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
                         <Input
                             type='search'
                             placeholder='Search...'
+                            value={search}
+                            onChange={handleSearch}
                             className='w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]'
                         />
                     </div>

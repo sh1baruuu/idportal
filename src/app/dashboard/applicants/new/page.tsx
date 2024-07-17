@@ -57,6 +57,8 @@ import { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 
+
+
 export default function AddRegistrantPage() {
     const router = useRouter();
     const countApplicant = trpc.countApplicant.useQuery();

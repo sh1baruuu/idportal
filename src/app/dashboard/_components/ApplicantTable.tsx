@@ -17,6 +17,8 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import TableRowLoader from './TableRowLoader';
 
 export interface Applicant {
     applicationNo: string;
@@ -30,14 +32,53 @@ export interface Applicant {
 
 interface Props {
     data: Applicant[] | undefined;
+    isLoading: boolean;
+    pageSize: number;
 }
 
-const ApplicantTable: React.FC<Props> = ({ data }) => {
+const ApplicantTable: React.FC<Props> = ({ data, isLoading, pageSize}) => {
+
+    const ApplicantRows = data?.map((r) => (
+        <TableRow key={r.applicationNo}>
+            <TableCell className='font-semibold uppercase'>
+                {r.fullname}
+            </TableCell>
+            <TableCell>{r.address}</TableCell>
+            <TableCell>
+                <Badge variant='outline'>{r.licenseNo}</Badge>
+            </TableCell>
+            <TableCell className='hidden md:table-cell'>
+                {r.applicationType}
+            </TableCell>
+            <TableCell>
+                <p>{r.ownedTricycles}</p>
+            </TableCell>
+            <TableCell>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button
+                            aria-haspopup='true'
+                            size='icon'
+                            variant='ghost'
+                        >
+                            <MoreHorizontal className='h-4 w-4' />
+                            <span className='sr-only'>Toggle menu</span>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align='end'>
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                        <DropdownMenuItem>Delete</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </TableCell>
+        </TableRow>
+    ));
 
     return (
         <Table>
             <TableHeader>
-                <TableRow>
+                <TableRow className='hover:bg-transparent'>
                     <TableHead>Fullname</TableHead>
                     <TableHead className='hidden md:table-cell'>
                         Address
@@ -57,48 +98,9 @@ const ApplicantTable: React.FC<Props> = ({ data }) => {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {data?.map((r) => (
-                    <TableRow key={r.applicationNo}>
-                        <TableCell className='font-semibold uppercase'>
-                            {r.fullname}
-                        </TableCell>
-                        <TableCell>{r.address}</TableCell>
-                        <TableCell>
-                            <Badge variant='outline'>{r.licenseNo}</Badge>
-                        </TableCell>
-                        <TableCell className='hidden md:table-cell'>
-                            {r.applicationType}
-                        </TableCell>
-                        <TableCell>
-                            <p>{r.ownedTricycles}</p>
-                        </TableCell>
-                        <TableCell>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button
-                                        aria-haspopup='true'
-                                        size='icon'
-                                        variant='ghost'
-                                    >
-                                        <MoreHorizontal className='h-4 w-4' />
-                                        <span className='sr-only'>
-                                            Toggle menu
-                                        </span>
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align='end'>
-                                    <DropdownMenuLabel>
-                                        Actions
-                                    </DropdownMenuLabel>
-                                    <DropdownMenuItem>Edit</DropdownMenuItem>
-                                    <DropdownMenuItem>Delete</DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </TableCell>
-                    </TableRow>
-                ))}
+                {isLoading ? <TableRowLoader rowCount={pageSize} colCount={6} /> : ApplicantRows}
             </TableBody>
-        </Table>
+        </Table> 
     );
 };
 

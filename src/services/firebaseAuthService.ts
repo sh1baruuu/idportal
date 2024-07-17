@@ -1,4 +1,4 @@
-import { auth } from "@/config/firebase/firebaseConfig";
+import { auth } from "@/config/firebaseConfig";
 import { LogInCredential } from "@/types";
 import { UserCredential, signInWithEmailAndPassword } from "firebase/auth";
 

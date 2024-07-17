@@ -1,11 +1,11 @@
 'use client';
 
-import { auth } from '@/config/firebase/firebaseConfig';
-import { validateEmail } from '@/lib/validation';
-import { signIn, signOut } from '@/services/firebaseAuth';
-import { LogInCredential } from '@/types';
+import { auth } from '@/config/firebaseConfig';
 import { removeAuthToken, setAuthToken } from '@/lib/authToken';
 import { getSignInErrorMessage } from '@/lib/errorMessages';
+import { validateEmail } from '@/lib/validation';
+import { signIn, signOut } from '@/services/firebaseAuthService';
+import { LogInCredential } from '@/types';
 import { useKeepMeLoggedInStore } from '@/zustand';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { createContext, useContext, useEffect, useState } from 'react';
