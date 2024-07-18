@@ -30,10 +30,10 @@ const CardCustomFooter: React.FC<Props> = ({
         setPage((page: number) => --page);
     };
 
-    if (total === 0) return;
+    if (total == 0) return;
 
     return (
-        <CardFooter>
+        <CardFooter >
             <div className='text-xs text-muted-foreground'>
                 Showing{' '}
                 <strong>

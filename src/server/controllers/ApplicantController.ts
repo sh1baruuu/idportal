@@ -1,4 +1,4 @@
-import { addApplicant, addTricycles, countApplicant, getAllApplicants } from '@/services/applicantService';
+import { addApplicant, addTricycles, countApplicant, deleteApplicant, getAllApplicants } from '@/services/applicantService';
 
 import { z } from 'zod';
 import { publicProcedure } from '../trpc';
@@ -29,9 +29,13 @@ const ApplicantPaginationSchema = z.object({
     search: z.string().nullable(),
     page: z.number().min(1).default(1),
     pageSize: z.number().min(1).max(100).default(10),
-    filter: z.enum(['All', 'Driver/Operator', 'Operator']),
+    filter: z.string(),
     order: z.string(),
 });
+
+const ApplicantDeleteSchema = z.object({
+    applicantId: z.string()
+})
 
 export const applicantRouter = {
     addApplicant: publicProcedure
@@ -52,4 +56,10 @@ export const applicantRouter = {
         .query(async ({ input }) => {
             return getAllApplicants(input);
         }),
+    deleteApplicant: publicProcedure.input(ApplicantDeleteSchema)
+        .mutation(async ({ input }) => {
+            const { applicantId } = input;
+            const response = await deleteApplicant(applicantId);
+            return response;
+        })
 };

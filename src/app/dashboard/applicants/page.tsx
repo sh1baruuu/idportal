@@ -1,14 +1,10 @@
 'use client';
 
-import { File, PlusCircle } from 'lucide-react';
 import { trpc } from '@/app/_trpc/client';
 import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ApplicationType } from '@/types';
+import { File, PlusCircle } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import ApplicantTable from '../_components/ApplicantTable';
@@ -17,11 +13,13 @@ import CardCustomFooter from '../_components/CardFooter';
 import EmptyTableIndicator from '../_components/EmptyTableIndicator';
 import SortDropdownMenu from '../_components/SortDropdownMenu';
 
+const filterOptions: string[] = ['All', 'Operator', 'Driver/Operator'];
+
 export default function ApplicantsTab() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [page, setPage] = useState<number>(1);
-    const [filter, setFilter] = useState<ApplicationType>('All');
+    const [filter, setFilter] = useState<string>('All');
     const [order, setOrder] = useState<string>('');
     const search = searchParams.get('s');
     const pageSize = 10;
@@ -42,33 +40,26 @@ export default function ApplicantsTab() {
         setPage(1);
     }, [filter, search]);
 
-    useEffect(()=>{
+    useEffect(() => {
         refetch();
-    }, [])
+    }, []);
 
     return (
         <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>
             <Tabs defaultValue='All'>
                 <div className='flex items-center'>
                     <TabsList>
-                        <TabsTrigger
-                            onClick={() => setFilter('All')}
-                            value='All'
-                        >
-                            All
-                        </TabsTrigger>
-                        <TabsTrigger
-                            onClick={() => setFilter('Operator')}
-                            value='Operator'
-                        >
-                            Operator
-                        </TabsTrigger>
-                        <TabsTrigger
-                            onClick={() => setFilter('Driver/Operator')}
-                            value='Driver/Operator'
-                        >
-                            Driver/Operator
-                        </TabsTrigger>
+                        {filterOptions.map((option, i) => {
+                            return (
+                                <TabsTrigger
+                                    onClick={() => setFilter(option)}
+                                    value={option}
+                                    key={i}
+                                >
+                                    {option}
+                                </TabsTrigger>
+                            );
+                        })}
                     </TabsList>
                     <div className='ml-auto flex items-center gap-2'>
                         <SortDropdownMenu sort={order} sortBy={setOrder} />
@@ -96,12 +87,16 @@ export default function ApplicantsTab() {
                 </div>
                 <div className='mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'>
                     <Card>
-                        <CardCustomHeader title='Applicants' description='Manage and view applicant permit records.' />
+                        <CardCustomHeader
+                            title='Applicants'
+                            description='Manage and view applicant permit records.'
+                        />
                         <CardContent>
                             <ApplicantTable
                                 isLoading={isLoading}
                                 data={data?.applicants}
                                 pageSize={pageSize}
+                                refetch={refetch}
                             />
                             <EmptyTableIndicator
                                 search={search}

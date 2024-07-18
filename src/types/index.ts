@@ -11,15 +11,12 @@ export interface Tricycle {
     plateOrStickerNo: string;
 }
 
-
 export interface Tricycles extends Tricycle {
     id: number;
     driverName: string;
     driverLicenseNo: string | null;
     operator: string;
 }[]
-
-export type ApplicationType = 'All' | 'Driver/Operator' | 'Operator';
 
 export interface SortOptions {
     label: string;

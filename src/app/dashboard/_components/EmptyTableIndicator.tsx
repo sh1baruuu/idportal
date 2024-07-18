@@ -1,3 +1,4 @@
+import { undefined } from 'zod';
 import NoData from './NoData';
 import NoMatches from './NoMatches';
 
@@ -8,14 +9,17 @@ interface Props {
 }
 
 const EmptyTableIndicator: React.FC<Props> = ({ isLoading, total, search }) => {
-    return (
-        !isLoading &&
-        (search === '' || (search === null && total === 0) ? (
-            <NoData />
-        ) : search !== '' && total == 0 ? (
-            <NoMatches />
-        ) : null)
-    );
+    if (isLoading) return null;
+    
+    if (!search && total == 0) {
+        return <NoData />;
+    }
+
+    if (search && total == 0) {
+        return <NoMatches />;
+    }
+
+    return null;
 };
 
 export default EmptyTableIndicator;

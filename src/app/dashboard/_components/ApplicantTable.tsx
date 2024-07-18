@@ -1,5 +1,7 @@
 import { MoreHorizontal } from 'lucide-react';
 
+import { trpc } from '@/app/_trpc/client';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -16,9 +18,22 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+import { TRPCError } from '@trpc/server';
 import TableRowLoader from './TableRowLoader';
+
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { useState } from 'react';
+import { applicant } from '@/db/schema';
+import { toast } from '@/components/ui/use-toast';
 
 export interface Applicant {
     applicationNo: string;
@@ -34,9 +49,36 @@ interface Props {
     data: Applicant[] | undefined;
     isLoading: boolean;
     pageSize: number;
+    refetch: () => void;
 }
 
-const ApplicantTable: React.FC<Props> = ({ data, isLoading, pageSize}) => {
+const ApplicantTable: React.FC<Props> = (props) => {
+    const { data, isLoading, pageSize, refetch } = props;
+    const [openDialog, setOpenDialog] = useState<boolean>(false);
+
+    const { mutateAsync, isPending } = trpc.deleteApplicant.useMutation({});
+
+    const closeDialog = () => setOpenDialog(false);
+
+    const deleteApplicant = async (applicantId: string): Promise<void> => {
+        try {
+            const res = await mutateAsync({ applicantId });
+            const [data] = res[1];
+
+            toast({
+                title: 'Applicant Deleted',
+                description: `The applicant data (ID: ${data.id}) has been successfully deleted.`,
+            });
+
+            refetch();
+        } catch (error) {
+            if (error instanceof TRPCError) {
+                console.error('TRPC Error:', error.message);
+            } else {
+                console.error('Unexpected Error:', error);
+            }
+        }
+    };
 
     const ApplicantRows = data?.map((r) => (
         <TableRow key={r.applicationNo}>
@@ -68,9 +110,33 @@ const ApplicantTable: React.FC<Props> = ({ data, isLoading, pageSize}) => {
                     <DropdownMenuContent align='end'>
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>Delete</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setOpenDialog(true)}>
+                            Delete
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
+                <AlertDialog onOpenChange={closeDialog} open={openDialog}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>
+                                Are you absolutely sure?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action cannot be undone. This will
+                                permanently delete applicant data (ID:{' '}
+                                {r.applicationNo}) from our server.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={() => deleteApplicant(r.applicationNo)}
+                            >
+                                Continue
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </TableCell>
         </TableRow>
     ));
@@ -98,9 +164,13 @@ const ApplicantTable: React.FC<Props> = ({ data, isLoading, pageSize}) => {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {isLoading ? <TableRowLoader rowCount={pageSize} colCount={6} /> : ApplicantRows}
+                {isLoading ? (
+                    <TableRowLoader rowCount={pageSize} colCount={6} />
+                ) : (
+                    ApplicantRows
+                )}
             </TableBody>
-        </Table> 
+        </Table>
     );
 };
 

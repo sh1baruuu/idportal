@@ -1,6 +1,6 @@
 import db from '@/db/db';
 import { applicant, tricycle } from '@/db/schema';
-import { FilterParams, GetAllApplicantsParams } from '@/types';
+import { GetAllApplicantsParams } from '@/types';
 import { and, asc, desc, eq, ilike, or, sql } from 'drizzle-orm';
 
 export const addApplicant = async (input: any) => {
@@ -13,8 +13,6 @@ export const addApplicant = async (input: any) => {
         licenseNo: input.licenseNo,
         applicationDate: JSON.stringify(input.applicationDate)
     });
-
-    return { success: true };
 };
 
 export const addTricycles = async (input: any) => {
@@ -92,3 +90,13 @@ export const getAllApplicants = async ({ page, pageSize, filter, order, search }
         hasNextPage: page < totalPages,
     };
 };
+
+
+export const deleteApplicant = async (applicantId: string) => {
+    const response = await db.batch([
+        db.delete(tricycle).where(eq(tricycle.applicantId, applicantId)).returning({}),
+        db.delete(applicant).where(eq(applicant.applicationNo, applicantId)).returning({ id: applicant.applicationNo }),
+    ])
+
+    return response;
+}
