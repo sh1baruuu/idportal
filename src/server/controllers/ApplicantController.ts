@@ -1,5 +1,4 @@
-import { addApplicant, addTricycles, countApplicant, deleteApplicant, getAllApplicants } from '@/services/applicantService';
-
+import { addApplicant, countApplicant, deleteApplicant, getAllApplicants } from '@/services/applicantService';
 import { z } from 'zod';
 import { publicProcedure } from '../trpc';
 
@@ -25,6 +24,15 @@ const ApplicantSchema = z.object({
     applicationDate: z.string(),
 });
 
+const AddApplicantSchema = z.object({
+    applicant: ApplicantSchema,
+    tricycle: TricycleSchema
+})
+
+export type Tricycle = z.infer<typeof TricycleSchema>[number];
+export type Applicant = z.infer<typeof ApplicantSchema>;
+export type AddApplicant = z.infer<typeof AddApplicantSchema>;
+
 const ApplicantPaginationSchema = z.object({
     search: z.string().nullable(),
     page: z.number().min(1).default(1),
@@ -39,14 +47,9 @@ const ApplicantDeleteSchema = z.object({
 
 export const applicantRouter = {
     addApplicant: publicProcedure
-        .input(ApplicantSchema)
+        .input(AddApplicantSchema)
         .mutation(async ({ input }) => {
             return addApplicant(input);
-        }),
-    addTricycles: publicProcedure
-        .input(TricycleSchema)
-        .mutation(async ({ input }) => {
-            return addTricycles(input);
         }),
     countApplicant: publicProcedure.query(async () => {
         return countApplicant();

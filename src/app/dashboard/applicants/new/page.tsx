@@ -62,7 +62,6 @@ import { useRouter } from 'next/navigation';
 export default function AddRegistrantPage() {
     const router = useRouter();
     const countApplicant = trpc.countApplicant.useQuery();
-    const addTricycles = trpc.addTricycles.useMutation({});
     const addApplicant = trpc.addApplicant.useMutation({});
 
     const applicantForm = useForm<z.infer<typeof ApplicantFormSchema>>({
@@ -190,8 +189,7 @@ export default function AddRegistrantPage() {
 
     const onSubmit = async (data: z.infer<typeof ApplicantFormSchema>) => {
         try {
-            await addApplicant.mutateAsync(data);
-            await addTricycles.mutateAsync(data.tricycles);
+            await addApplicant.mutateAsync({applicant: data, tricycle: data.tricycles});
 
             toast({
                 title: 'New Applicant Added',

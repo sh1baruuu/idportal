@@ -1,24 +1,30 @@
 import db from '@/db/db';
 import { applicant, tricycle } from '@/db/schema';
+import { AddApplicant } from '@/server/controllers/ApplicantController';
 import { GetAllApplicantsParams } from '@/types';
 import { and, asc, desc, eq, ilike, or, sql } from 'drizzle-orm';
+import { BatchItem } from 'drizzle-orm/batch';
 
-export const addApplicant = async (input: any) => {
-    await db.insert(applicant).values({
-        applicationNo: input.applicationNo,
-        applicationType: input.applicationType,
-        fullname: input.fullname,
-        address: input.address,
-        contactNo: input.contactNo,
-        licenseNo: input.licenseNo,
-        applicationDate: JSON.stringify(input.applicationDate)
-    });
-};
+export const addApplicant = async (input: AddApplicant) => {
+    const { applicant: app, tricycle: tri } = input;
 
-export const addTricycles = async (input: any) => {
-    if (input.length != 0) {
-        await db.insert(tricycle).values(input);
+    const applicantInsertQuery = db.insert(applicant).values({
+        ...app,
+        applicationDate: JSON.stringify(app.applicationDate)
+    }).returning();
+
+    const tricycleInsertQuery = db.insert(tricycle).values(tri);
+
+    let query: [BatchItem<"pg">, ...BatchItem<"pg">[]] = [applicantInsertQuery];
+
+
+    if (tri.length > 0) {
+        query.push(tricycleInsertQuery);
     }
+
+    const response = await db.batch(query);
+
+    return response;
 };
 
 export const countApplicant = async () => {
@@ -94,7 +100,7 @@ export const getAllApplicants = async ({ page, pageSize, filter, order, search }
 
 export const deleteApplicant = async (applicantId: string) => {
     const response = await db.batch([
-        db.delete(tricycle).where(eq(tricycle.applicantId, applicantId)).returning({}),
+        db.delete(tricycle).where(eq(tricycle.applicantId, applicantId)),
         db.delete(applicant).where(eq(applicant.applicationNo, applicantId)).returning({ id: applicant.applicationNo }),
     ])
 

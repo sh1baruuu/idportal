@@ -1,12 +1,12 @@
 import db from '@/db/db';
 import { tricycle } from '@/db/schema';
-import { FilterParams, GetAllTricyclesParams } from '@/types';
-import { and, asc, desc, ilike, or, sql } from 'drizzle-orm';
-import { z } from 'zod';
+import { deleteTricycleType } from '@/server/controllers/TricycleController';
+import { GetAllTricyclesParams } from '@/types';
+import { asc, desc, eq, ilike, or, sql } from 'drizzle-orm';
 
 
 
-export const getAllTricycles = async ({ page, pageSize, order, search }: GetAllTricyclesParams) => {
+const getAllTricycles = async ({ page, pageSize, order, search }: GetAllTricyclesParams) => {
     const offset = (page - 1) * pageSize;
 
     let whereClause;
@@ -62,3 +62,12 @@ export const getAllTricycles = async ({ page, pageSize, order, search }: GetAllT
         hasNextPage: page < totalPages,
     };
 };
+
+const deleteTricycleByApplicantId = async (input: deleteTricycleType) => {
+    const { plateNo } = input;
+    return await db.delete(tricycle).where(eq(tricycle.plateOrStickerNo, plateNo)).returning({ plateNo: tricycle.plateOrStickerNo })
+}
+
+
+
+export { deleteTricycleByApplicantId, getAllTricycles };

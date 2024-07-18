@@ -1,5 +1,5 @@
-
 import { date, pgTable, serial, uuid, varchar } from 'drizzle-orm/pg-core';
+import { typeToFlattenedError } from 'zod';
 
 
 export const applicant = pgTable('applicant_tb', {
@@ -23,7 +23,7 @@ export const tricycle = pgTable('tricycle_tb', {
     applicantId: varchar('applicant_id').references(() => applicant.applicationNo).notNull(),
 });
 
-
+export type ApplicantInsert = typeof applicant.$inferInsert
 
 
 

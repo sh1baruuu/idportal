@@ -68,6 +68,7 @@ export default function TricyclesTab() {
                                     isLoading={isLoading}
                                     data={data?.tricycles}
                                     pageSize={pageSize}
+                                    refetch={refetch}
                                 />
                                 <EmptyTableIndicator
                                     search={search}
@@ -82,7 +83,7 @@ export default function TricyclesTab() {
                                 setPage={setPage}
                                 hasNextPage={!data?.hasNextPage}
                                 isFirstPage={data?.isFirstPage}
-                                name='trcycles'
+                                name='tricycles'
                             />
                         </Card>
                     </div>

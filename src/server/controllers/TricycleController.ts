@@ -1,4 +1,5 @@
-import { getAllTricycles } from '@/services/tricycleService';
+import { applicant } from '@/db/schema';
+import { deleteTricycleByApplicantId, getAllTricycles } from '@/services/tricycleService';
 import { publicProcedure } from '../trpc';
 import { z } from 'zod';
 
@@ -10,10 +11,19 @@ const TricyclePaginationSchema = z.object({
     order: z.string(),
 });
 
+const DeleteTricycleSchema = z.object({
+    plateNo: z.string()
+})
+
+export type deleteTricycleType = z.infer<typeof DeleteTricycleSchema>;
+
 export const tricycleRouter = {
     getAllTricycles: publicProcedure
         .input(TricyclePaginationSchema)
         .query(async ({ input }) => {
             return getAllTricycles(input);
         }),
+    deleteTricycle: publicProcedure.input(DeleteTricycleSchema).mutation(async ({ input }) => {
+        return deleteTricycleByApplicantId(input)
+    })
 };

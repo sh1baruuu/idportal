@@ -32,8 +32,8 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useState } from 'react';
-import { applicant } from '@/db/schema';
 import { toast } from '@/components/ui/use-toast';
+import DeleteDialog from './DeleteDialog';
 
 export interface Applicant {
     applicationNo: string;
@@ -56,7 +56,9 @@ const ApplicantTable: React.FC<Props> = (props) => {
     const { data, isLoading, pageSize, refetch } = props;
     const [openDialog, setOpenDialog] = useState<boolean>(false);
 
-    const { mutateAsync, isPending } = trpc.deleteApplicant.useMutation({});
+    const { mutateAsync, isPending, error } = trpc.deleteApplicant.useMutation(
+        {}
+    );
 
     const closeDialog = () => setOpenDialog(false);
 
@@ -64,13 +66,13 @@ const ApplicantTable: React.FC<Props> = (props) => {
         try {
             const res = await mutateAsync({ applicantId });
             const [data] = res[1];
+            refetch();
 
             toast({
                 title: 'Applicant Deleted',
                 description: `The applicant data (ID: ${data.id}) has been successfully deleted.`,
             });
 
-            refetch();
         } catch (error) {
             if (error instanceof TRPCError) {
                 console.error('TRPC Error:', error.message);
@@ -115,28 +117,15 @@ const ApplicantTable: React.FC<Props> = (props) => {
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
-                <AlertDialog onOpenChange={closeDialog} open={openDialog}>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>
-                                Are you absolutely sure?
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                                This action cannot be undone. This will
-                                permanently delete applicant data (ID:{' '}
-                                {r.applicationNo}) from our server.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                                onClick={() => deleteApplicant(r.applicationNo)}
-                            >
-                                Continue
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
+                <DeleteDialog
+                        id={r.applicationNo}
+                        open={openDialog}
+                        onOpenChange={closeDialog}
+                        onDelete={deleteApplicant}
+                        description={` This action cannot be undone. This will permanently
+                            delete applicant data (ID: ${r.applicationNo}) from our
+                            server.`}
+                />
             </TableCell>
         </TableRow>
     ));

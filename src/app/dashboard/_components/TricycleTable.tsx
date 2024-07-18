@@ -18,13 +18,60 @@ import { Tricycles } from '@/types';
 import { MoreHorizontal } from 'lucide-react';
 import TableRowLoader from './TableRowLoader';
 
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { useState } from 'react';
+import { TRPCError } from '@trpc/server';
+import { toast } from '@/components/ui/use-toast';
+import { trpc } from '@/app/_trpc/client';
+import DeleteDialog from './DeleteDialog';
+
 interface Props {
     data: Tricycles[] | undefined;
     isLoading: boolean;
     pageSize: number;
+    refetch: () => void;
 }
 
-const TricycleTable: React.FC<Props> = ({ data, isLoading, pageSize }) => {
+const TricycleTable: React.FC<Props> = ({
+    data,
+    isLoading,
+    pageSize,
+    refetch,
+}) => {
+    const [openDialog, setOpenDialog] = useState<boolean>(false);
+
+    const closeDialog = () => setOpenDialog(false);
+
+    const { mutateAsync, isPending } = trpc.deleteTricycle.useMutation({});
+
+    const deleteTricycle = async (plateNo: string): Promise<void> => {
+        try {
+            const res = await mutateAsync({ plateNo });
+            refetch();
+
+            toast({
+                title: 'Tricycle Deleted',
+                description: `The tricycle data (Plate No: ${res[0].plateNo}) has been successfully deleted.`,
+            });
+
+        } catch (error) {
+            if (error instanceof TRPCError) {
+                console.error('TRPC Error:', error.message);
+            } else {
+                console.error('Unexpected Error:', error);
+            }
+        }
+    };
+
     const TricycleRows = data?.map((t) => {
         return (
             <TableRow key={t.id}>
@@ -64,9 +111,22 @@ const TricycleTable: React.FC<Props> = ({ data, isLoading, pageSize }) => {
                         <DropdownMenuContent align='end'>
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuItem>Edit</DropdownMenuItem>
-                            <DropdownMenuItem>Delete</DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => setOpenDialog(true)}
+                            >
+                                Delete
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
+                    <DeleteDialog
+                        id={t.plateOrStickerNo}
+                        open={openDialog}
+                        onOpenChange={closeDialog}
+                        onDelete={deleteTricycle}
+                        description={` This action cannot be undone. This will
+                                    permanently delete tricycle data (Plate No:
+                                    ${t.plateOrStickerNo}) from our server.`}
+                    />
                 </TableCell>
             </TableRow>
         );
