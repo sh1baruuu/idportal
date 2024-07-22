@@ -1,7 +1,6 @@
 import db from '@/db/db';
 import { applicant, tricycle } from '@/db/schema';
-import { AddApplicant } from '@/server/controllers/ApplicantController';
-import { GetAllApplicantsParams } from '@/types';
+import { AddApplicant, GetAllApplicantsParams } from '@/types';
 import { and, asc, desc, eq, ilike, or, sql } from 'drizzle-orm';
 import { BatchItem } from 'drizzle-orm/batch';
 
@@ -9,8 +8,15 @@ export const addApplicant = async (input: AddApplicant) => {
     const { applicant: app, tricycle: tri } = input;
 
     const applicantInsertQuery = db.insert(applicant).values({
-        ...app,
-        applicationDate: JSON.stringify(app.applicationDate)
+        applicationNo: app.applicationNo,
+        applicationType: app.applicationType,
+        fullname: app.fullname,
+        address: app.address,
+        contactNo: app.contactNo,
+        licenseNo: app.licenseNo,
+        applicationDate: JSON.stringify(app.applicationDate),
+        driverName: app.driverName,
+        driverLicenseNo: app.driverLicenseNo,
     }).returning();
 
     const tricycleInsertQuery = db.insert(tricycle).values(tri);
@@ -22,9 +28,13 @@ export const addApplicant = async (input: AddApplicant) => {
         query.push(tricycleInsertQuery);
     }
 
-    const response = await db.batch(query);
-
-    return response;
+    try {
+        const response = await db.batch(query);
+        return response;
+    } catch (error) {
+        console.error("Error adding applicant and tricycle:", error);
+        throw new Error("Failed to add applicant and tricycle.");
+    }
 };
 
 export const countApplicant = async () => {

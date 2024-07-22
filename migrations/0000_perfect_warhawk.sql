@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS "applicant_tb" (
 	"contact_no" varchar NOT NULL,
 	"sss/license_no" varchar,
 	"application_date" date NOT NULL,
+	"driver_name" varchar NOT NULL,
+	"driver_license_no" varchar,
 	CONSTRAINT "applicant_tb_sss/license_no_unique" UNIQUE("sss/license_no")
 );
 --> statement-breakpoint
@@ -15,8 +17,6 @@ CREATE TABLE IF NOT EXISTS "tricycle_tb" (
 	"engine_no" varchar NOT NULL,
 	"chassis_no" varchar NOT NULL,
 	"plate_sticker_no" varchar NOT NULL,
-	"driver_name" varchar NOT NULL,
-	"driver_license_no" varchar NOT NULL,
 	"applicant_id" varchar NOT NULL
 );
 --> statement-breakpoint

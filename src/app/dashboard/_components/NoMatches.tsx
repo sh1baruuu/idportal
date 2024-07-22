@@ -15,7 +15,7 @@ const NoMatches: React.FC = () => {
                     Whoops, no matches
                 </p>
                 <p className='text-gray-400 text-center text-xs'>
-                    We couldn't find any search results. <br />
+                    We couldn&apos;t find any search results. <br />
                     Give it another go
                 </p>
             </div>

@@ -1,8 +1,9 @@
 import db from '@/db/db';
-import { tricycle } from '@/db/schema';
+import { applicant, tricycle } from '@/db/schema';
 import { deleteTricycleType } from '@/server/controllers/TricycleController';
-import { GetAllTricyclesParams } from '@/types';
+import { GetAllTricyclesParams, Tricycles } from '@/types';
 import { asc, desc, eq, ilike, or, sql } from 'drizzle-orm';
+
 
 
 
@@ -22,8 +23,8 @@ const getAllTricycles = async ({ page, pageSize, order, search }: GetAllTricycle
             ilike(tricycle.chassisNo, `%${search}%`),
             ilike(tricycle.engineNo, `%${search}%`),
             ilike(tricycle.plateOrStickerNo, `%${search}%`),
-            ilike(tricycle.driverLicenseNo, `%${search}%`),
-            ilike(tricycle.driverName, `%${search}%`)
+            // ilike(tricycle.driverLicenseNo, `%${search}%`),
+            // ilike(tricycle.driverName, `%${search}%`)
         );
     }
 
@@ -33,10 +34,11 @@ const getAllTricycles = async ({ page, pageSize, order, search }: GetAllTricycle
         engineNo: tricycle.engineNo,
         chassisNo: tricycle.chassisNo,
         plateOrStickerNo: tricycle.plateOrStickerNo,
-        driverName: tricycle.driverName,
-        driverLicenseNo: tricycle.driverLicenseNo,
+        driverName: applicant.driverName,
+        driverLicenseNo: applicant.driverLicenseNo,
+        applicantId: tricycle.applicantId,
         operator: sql<string>`(SELECT fullname FROM applicant_tb WHERE application_no = ${tricycle.applicantId})`
-    }).from(tricycle).where(whereClause);
+    }).from(tricycle).where(whereClause).leftJoin(applicant, eq(tricycle.applicantId, applicant.applicationNo))
 
     if (orderByClause) {
         query.orderBy(orderByClause);

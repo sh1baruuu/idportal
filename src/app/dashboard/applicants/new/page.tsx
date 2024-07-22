@@ -51,20 +51,20 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { toast } from '@/components/ui/use-toast';
+import { ApplicantForm, Tricycle } from '@/types';
 import { ApplicantFormSchema, TricycleSchema } from '@/types/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
-
-
+import { customAlphabet } from 'nanoid';
 
 export default function AddRegistrantPage() {
     const router = useRouter();
     const countApplicant = trpc.countApplicant.useQuery();
     const addApplicant = trpc.addApplicant.useMutation({});
 
-    const applicantForm = useForm<z.infer<typeof ApplicantFormSchema>>({
+    const applicantForm = useForm<ApplicantForm>({
         defaultValues: {
             applicationNo: '',
             applicationType: 'Driver/Operator',
@@ -80,30 +80,21 @@ export default function AddRegistrantPage() {
         resolver: zodResolver(ApplicantFormSchema),
     });
 
-    const newTricycle = useForm<z.infer<typeof TricycleSchema>>({
+    const newTricycle = useForm<Tricycle>({
         defaultValues: {
             makeOrBrand: '',
             engineNo: '',
             chassisNo: '',
             plateOrStickerNo: '',
-            driverName: '',
-            driverLicenseNo: '',
             applicantId: '',
         },
         resolver: zodResolver(TricycleSchema),
     });
 
-    const {
-        applicationNo,
-        applicationType,
-        fullname,
-        licenseNo,
-        driverName,
-        driverLicenseNo,
-        tricycles,
-    } = applicantForm.watch();
+    const { applicationNo, applicationType, fullname, licenseNo, tricycles } =
+        applicantForm.watch();
 
-    const { makeOrBrand, engineNo, chassisNo, plateOrStickerNo } =
+    const { makeOrBrand, engineNo, chassisNo, plateOrStickerNo, applicantId } =
         newTricycle.watch();
 
     const { append, fields, remove } = useFieldArray({
@@ -119,25 +110,17 @@ export default function AddRegistrantPage() {
     } = newTricycle;
 
     useEffect(() => {
-        newTricycle.setValue('driverName', driverName);
-        newTricycle.setValue('driverLicenseNo', driverLicenseNo);
         newTricycle.setValue('applicantId', applicationNo);
-    }, [
-        driverName,
-        driverLicenseNo,
-        applicationNo,
-        applicationType,
-        tricycles,
-    ]);
+    }, [applicationNo, applicationType]);
 
     useEffect(() => {
-        const uaid = (number: any): string => {
-            const paddedNumber = (++number)?.toString().padStart(4, '0');
+        const uaid = (): string => {
+            const nanoid = customAlphabet('1234567890', 10);
 
-            return `APP-${paddedNumber}`;
+            return `APP-${nanoid()}`;
         };
         if (countApplicant.data) {
-            applicantForm.setValue('applicationNo', uaid(countApplicant.data));
+            applicantForm.setValue('applicationNo', uaid());
         }
     }, [countApplicant.data]);
 
@@ -151,20 +134,7 @@ export default function AddRegistrantPage() {
             applicantForm.setValue('driverLicenseNo', '');
             setIsDriverOperator(false);
         }
-    }, [
-        applicationType,
-        fullname,
-        licenseNo,
-        applicantForm.setValue,
-        applicationNo,
-    ]);
-
-    // useEffect(() => {
-    //     if (applicationType === 'Operator') {
-    //         setValue('driverName', '');
-    //         setValue('driverLicenseNo', '');
-    //     }
-    // }, [applicationType]);
+    }, [applicationType, fullname, licenseNo, applicantForm, tricycles]);
 
     useEffect(() => {
         if (makeOrBrand.length > 0) clearErrors('makeOrBrand');
@@ -182,6 +152,7 @@ export default function AddRegistrantPage() {
             plateOrStickerNo.length > 0 &&
             chassisNo.length > 0
         ) {
+            newTricycle.setValue('applicantId', applicationNo);
             append(newTricycle.getValues());
             newTricycle.reset();
         }
@@ -189,7 +160,10 @@ export default function AddRegistrantPage() {
 
     const onSubmit = async (data: z.infer<typeof ApplicantFormSchema>) => {
         try {
-            await addApplicant.mutateAsync({applicant: data, tricycle: data.tricycles});
+            await addApplicant.mutateAsync({
+                applicant: data,
+                tricycle: data.tricycles,
+            });
 
             toast({
                 title: 'New Applicant Added',
@@ -346,10 +320,16 @@ export default function AddRegistrantPage() {
                                                         mode='single'
                                                         selected={
                                                             field.value
-                                                                ? new Date(field.value)
+                                                                ? new Date(
+                                                                      field.value
+                                                                  )
                                                                 : null
-                                                        } // Convert string to Date for Calendar component
-                                                        onSelect={(date: Date) => {
+                                                        }
+                                                        onSelect={(
+                                                            date:
+                                                                | Date
+                                                                | undefined
+                                                        ) => {
                                                             if (date) {
                                                                 const dateString =
                                                                     date.toLocaleDateString(
@@ -385,7 +365,7 @@ export default function AddRegistrantPage() {
                         <CardHeader>
                             <CardTitle>Personal Information</CardTitle>
                             <CardDescription>
-                                Enter applicant's personal and contact
+                                Enter applicant&apos;s personal and contact
                                 information.
                             </CardDescription>
                         </CardHeader>

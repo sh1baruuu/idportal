@@ -23,9 +23,9 @@ const MyDocument = ({data}: {data: Barangay[] | undefined}) => {
 
     return (
         <Document>
-            {data?.map(({name}) => {
+            {data?.map(({name}, i) => {
                 return (
-                    <Page size='LETTER' style={styles.page}>
+                    <Page size='LETTER' style={styles.page} key={i}>
                         <View style={styles.section}>
                             <Text>{name.toUpperCase()}</Text>
                             <Button>Hello</Button>

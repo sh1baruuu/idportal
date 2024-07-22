@@ -1,5 +1,5 @@
 {
-  "id": "4246f20c-8956-40ad-a396-7415af38df1d",
+  "id": "619902bc-efc7-4f5b-82ab-4984650109f0",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -49,6 +49,18 @@
           "type": "date",
           "primaryKey": false,
           "notNull": true
+        },
+        "driver_name": {
+          "name": "driver_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "driver_license_no": {
+          "name": "driver_license_no",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -94,18 +106,6 @@
         },
         "plate_sticker_no": {
           "name": "plate_sticker_no",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "driver_name": {
-          "name": "driver_name",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "driver_license_no": {
-          "name": "driver_license_no",
           "type": "varchar",
           "primaryKey": false,
           "notNull": true
