@@ -10,7 +10,7 @@ function SignOutButton() {
     const signOut = async (): Promise<void> => {
         try {
             await onSignOut();
-            router.push('signin')
+            router.push('login')
         } catch (error) {
             console.error(error);
         }

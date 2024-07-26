@@ -1,7 +1,6 @@
 'use client';
 
 import { useAuth } from '@/context/AuthProvider';
-import LogInCredential from '@/types/LogInCredential';
 import { useKeepMeLoggedInStore } from '@/zustand';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -9,6 +8,7 @@ import { toast } from 'react-hot-toast';
 import { LuEye, LuEyeOff } from 'react-icons/lu';
 import { MdLock, MdPerson } from 'react-icons/md';
 import Spinner from '../common/Spinner';
+import { LogInCredential } from '@/types';
 
 const emptyUserCredential: LogInCredential = {
     email: '',
@@ -17,7 +17,7 @@ const emptyUserCredential: LogInCredential = {
 
 const SignInForm = () => {
     const router = useRouter();
-    const { onSignIn } = useAuth();
+    const { onLogIn } = useAuth();
     const [logInCredential, setLogInCredential] =
         useState<LogInCredential>(emptyUserCredential);
     const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -42,12 +42,12 @@ const SignInForm = () => {
         e.preventDefault();
         try {
             setIsLoggingIn(true);
-            await toast.promise(onSignIn(logInCredential), {
+            await toast.promise(onLogIn(logInCredential), {
                 loading: 'Logging in...',
                 success: <b className='text-sm'>Logged in successfully!</b>,
                 error: (err) => <span className='text-sm'>{err.message}</span>,
             });
-            router.push('/');
+            router.push('/dashboard');
         } catch (error) {
             return;
         } finally {
@@ -70,7 +70,8 @@ const SignInForm = () => {
                     autoComplete='on'
                     onChange={handleChange}
                     value={logInCredential.email}
-                    className='border border-gray-400 rounded-full w-full focus:outline-none text-sm py-[10px] pl-11 pr-6 text-gray-800'
+                    maxLength={254}
+                    className='border border-gray-400 rounded-full w-full focus:outline-blue-400 text-sm py-[10px] pl-11 pr-6 text-gray-800'
                 />
             </div>
             <div className='relative w-full'>
@@ -83,7 +84,8 @@ const SignInForm = () => {
                     autoComplete='on'
                     onChange={handleChange}
                     value={logInCredential.password}
-                    className='border border-gray-400 rounded-full w-full focus:outline-none text-sm py-[10px] px-11 text-gray-800'
+                    maxLength={64}
+                    className='border border-gray-400 rounded-full w-full focus:outline-blue-400 text-sm py-[10px] px-11 text-gray-800'
                 />
                 <button
                     type='button'
@@ -113,7 +115,7 @@ const SignInForm = () => {
             <button
                 type='submit'
                 disabled={isLoggingIn}
-                className='flex items-center justify-center rounded-full select-none bg-blue-600 text-white text-sm py-2 mt-2'
+                className={`flex items-center justify-center transition-all rounded-full select-none  text-white text-sm py-2 mt-2 ${isLoggingIn ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-600'}`}
             >
                 {isLoggingIn ? <Spinner /> : 'Log in'}
             </button>

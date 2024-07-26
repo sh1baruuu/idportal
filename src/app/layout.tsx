@@ -1,35 +1,50 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import '@/styles/globals.css';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { AuthProvider } from '@/context/AuthProvider';
+import { TRCPProvider } from '@/context/TRPCProvider';
+import { cn } from '@/lib/utils';
+import '@/styles/globals.css';
+import type { Metadata } from 'next';
+import { Inter as FontSans } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
+import { Toaster as ShadToaster } from '@/components/ui/toaster';
 
-const inter = Inter({ subsets: ['latin'] });
+const fontSans = FontSans({
+    subsets: ['latin'],
+    variable: '--font-sans',
+});
 
 export const metadata: Metadata = {
     title: 'Welcome to IDPortal',
     description: 'Developed by shibadev',
 };
 
-export default function RootLayout({
-    children,
-}: Readonly<{
+interface Props {
     children: React.ReactNode;
-}>) {
+}
+
+const toastOptions = {
+    style: {
+        maxWidth: 'fit-content',
+    },
+};
+
+export default function RootLayout({ children }: Readonly<Props>) {
     return (
         <html lang='en'>
-            <body className={inter.className}>
+            <body
+                className={cn(
+                    'min-h-screen bg-background font-sans antialiased',
+                    fontSans.variable
+                )}
+            >
                 <AuthProvider>
-                    <main>
-                        <Toaster
-                            toastOptions={{
-                                style: {
-                                    maxWidth: 'fit-content',
-                                },
-                            }}
-                        />
-                        {children}
-                    </main>
+                    <TRCPProvider>
+                        <TooltipProvider>
+                            <Toaster toastOptions={toastOptions} />
+                            <ShadToaster />
+                            {children}
+                        </TooltipProvider>
+                    </TRCPProvider>
                 </AuthProvider>
             </body>
         </html>

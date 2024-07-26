@@ -1,0 +1,289 @@
+{
+  "id": "2fc20f6c-d9b3-43fd-927b-96a8ea70492a",
+  "version": "2.0",
+  "name": "TP WEB",
+  "url": "http://localhost:3000",
+  "tests": [{
+    "id": "bf6e8849-3a9d-4200-ba04-4e59ee267c2b",
+    "name": "Add Applicant",
+    "commands": [{
+      "id": "385f9cce-2c57-4902-af11-d7af2b192418",
+      "comment": "",
+      "command": "open",
+      "target": "/dashboard/applicants/new",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "c12ce34b-d22d-44ca-abc9-87c5c2688d0f",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1382x744",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "886c52b2-e343-4c84-9fd0-1fc868d2d539",
+      "comment": "",
+      "command": "click",
+      "target": "id=fullname",
+      "targets": [
+        ["id=fullname", "id"],
+        ["name=fullname", "name"],
+        ["css=#fullname", "css:finder"],
+        ["xpath=//input[@id='fullname']", "xpath:attributes"],
+        ["xpath=//div/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "cf6b0b8e-4d14-4d29-ab66-5525d9815f0d",
+      "comment": "",
+      "command": "click",
+      "target": "id=fullname",
+      "targets": [
+        ["id=fullname", "id"],
+        ["name=fullname", "name"],
+        ["css=#fullname", "css:finder"],
+        ["xpath=//input[@id='fullname']", "xpath:attributes"],
+        ["xpath=//div/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "1d23e76d-1e9a-4f17-b5b9-e2bd431c213e",
+      "comment": "",
+      "command": "type",
+      "target": "id=fullname",
+      "targets": [
+        ["id=fullname", "id"],
+        ["name=fullname", "name"],
+        ["css=#fullname", "css:finder"],
+        ["xpath=//input[@id='fullname']", "xpath:attributes"],
+        ["xpath=//div/div/input", "xpath:position"]
+      ],
+      "value": "Rudolph Angelo C. De Villa"
+    }, {
+      "id": "c2680884-a3d6-4806-9db7-14b0df20b47c",
+      "comment": "",
+      "command": "click",
+      "target": "id=address",
+      "targets": [
+        ["id=address", "id"],
+        ["name=address", "name"],
+        ["css=#address", "css:finder"],
+        ["xpath=//input[@id='address']", "xpath:attributes"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "8e67e273-8843-44a3-a0d6-a6cac2d8abda",
+      "comment": "",
+      "command": "type",
+      "target": "id=address",
+      "targets": [
+        ["id=address", "id"],
+        ["name=address", "name"],
+        ["css=#address", "css:finder"],
+        ["xpath=//input[@id='address']", "xpath:attributes"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "Poblacion, San Luis, Batangas"
+    }, {
+      "id": "a30b9b3d-05b2-4844-be84-ce9b0ba2ed31",
+      "comment": "",
+      "command": "click",
+      "target": "id=licenseNo",
+      "targets": [
+        ["id=licenseNo", "id"],
+        ["name=licenseNo", "name"],
+        ["css=#licenseNo", "css:finder"],
+        ["xpath=//input[@id='licenseNo']", "xpath:attributes"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "989f2999-aa58-4d40-a608-b69721b3fe22",
+      "comment": "",
+      "command": "type",
+      "target": "id=licenseNo",
+      "targets": [
+        ["id=licenseNo", "id"],
+        ["name=licenseNo", "name"],
+        ["css=#licenseNo", "css:finder"],
+        ["xpath=//input[@id='licenseNo']", "xpath:attributes"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": "12345678"
+    }, {
+      "id": "68d2957e-fd4d-48cc-9816-712e7924e5e5",
+      "comment": "",
+      "command": "click",
+      "target": "id=contactNo",
+      "targets": [
+        ["id=contactNo", "id"],
+        ["name=contactNo", "name"],
+        ["css=#contactNo", "css:finder"],
+        ["xpath=//input[@id='contactNo']", "xpath:attributes"],
+        ["xpath=//div[3]/div[2]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "ce80d077-9381-40d6-b0ee-6c85e5bb45e2",
+      "comment": "",
+      "command": "type",
+      "target": "id=contactNo",
+      "targets": [
+        ["id=contactNo", "id"],
+        ["name=contactNo", "name"],
+        ["css=#contactNo", "css:finder"],
+        ["xpath=//input[@id='contactNo']", "xpath:attributes"],
+        ["xpath=//div[3]/div[2]/input", "xpath:position"]
+      ],
+      "value": "09695694106"
+    }, {
+      "id": "2dc7e54c-9dee-41b9-a569-dac55a46c9d3",
+      "comment": "",
+      "command": "click",
+      "target": "id=makeOrBrand",
+      "targets": [
+        ["id=makeOrBrand", "id"],
+        ["name=makeOrBrand", "name"],
+        ["css=#makeOrBrand", "css:finder"],
+        ["xpath=//input[@id='makeOrBrand']", "xpath:attributes"],
+        ["xpath=//td/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "a71cd2fb-ec13-4c35-8200-da9cdcdd8201",
+      "comment": "",
+      "command": "type",
+      "target": "id=makeOrBrand",
+      "targets": [
+        ["id=makeOrBrand", "id"],
+        ["name=makeOrBrand", "name"],
+        ["css=#makeOrBrand", "css:finder"],
+        ["xpath=//input[@id='makeOrBrand']", "xpath:attributes"],
+        ["xpath=//td/input", "xpath:position"]
+      ],
+      "value": "Honda"
+    }, {
+      "id": "24af366f-a461-43ef-a220-d359b9af4c27",
+      "comment": "",
+      "command": "click",
+      "target": "id=engineNo",
+      "targets": [
+        ["id=engineNo", "id"],
+        ["name=engineNo", "name"],
+        ["css=#engineNo", "css:finder"],
+        ["xpath=//input[@id='engineNo']", "xpath:attributes"],
+        ["xpath=//td[2]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "b7108ebc-a8ee-41a5-a479-cc79dd472044",
+      "comment": "",
+      "command": "type",
+      "target": "id=engineNo",
+      "targets": [
+        ["id=engineNo", "id"],
+        ["name=engineNo", "name"],
+        ["css=#engineNo", "css:finder"],
+        ["xpath=//input[@id='engineNo']", "xpath:attributes"],
+        ["xpath=//td[2]/input", "xpath:position"]
+      ],
+      "value": "123456"
+    }, {
+      "id": "e55cca14-f94f-4db4-85ba-21b2d10db396",
+      "comment": "",
+      "command": "click",
+      "target": "id=chassisNo",
+      "targets": [
+        ["id=chassisNo", "id"],
+        ["name=chassisNo", "name"],
+        ["css=#chassisNo", "css:finder"],
+        ["xpath=//input[@id='chassisNo']", "xpath:attributes"],
+        ["xpath=//td[3]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "cf191f86-8051-4481-8b75-2ab46c708415",
+      "comment": "",
+      "command": "type",
+      "target": "id=chassisNo",
+      "targets": [
+        ["id=chassisNo", "id"],
+        ["name=chassisNo", "name"],
+        ["css=#chassisNo", "css:finder"],
+        ["xpath=//input[@id='chassisNo']", "xpath:attributes"],
+        ["xpath=//td[3]/input", "xpath:position"]
+      ],
+      "value": "78906"
+    }, {
+      "id": "cbbe415c-78d6-4983-b2a1-b6615b7915e3",
+      "comment": "",
+      "command": "click",
+      "target": "id=plateOrStickerNo",
+      "targets": [
+        ["id=plateOrStickerNo", "id"],
+        ["name=plateOrStickerNo", "name"],
+        ["css=#plateOrStickerNo", "css:finder"],
+        ["xpath=//input[@id='plateOrStickerNo']", "xpath:attributes"],
+        ["xpath=//td[4]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "a3a9e8d9-6261-4761-9e15-4a464e602ca6",
+      "comment": "",
+      "command": "type",
+      "target": "id=plateOrStickerNo",
+      "targets": [
+        ["id=plateOrStickerNo", "id"],
+        ["name=plateOrStickerNo", "name"],
+        ["css=#plateOrStickerNo", "css:finder"],
+        ["xpath=//input[@id='plateOrStickerNo']", "xpath:attributes"],
+        ["xpath=//td[4]/input", "xpath:position"]
+      ],
+      "value": "764664"
+    }, {
+      "id": "01271a0e-5646-467d-9161-637370883e18",
+      "comment": "",
+      "command": "click",
+      "target": "css=.gap-1",
+      "targets": [
+        ["css=.gap-1", "css:finder"],
+        ["xpath=(//button[@type='button'])[6]", "xpath:attributes"],
+        ["xpath=//div[3]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Add Tricycle')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "e0acdf89-ba6e-457b-ade9-edfc96a0ed91",
+      "comment": "",
+      "command": "click",
+      "target": "css=.hidden > .bg-primary",
+      "targets": [
+        ["css=.hidden > .bg-primary", "css:finder"],
+        ["xpath=//div[2]/button[2]", "xpath:position"],
+        ["xpath=//button[contains(.,'Save Applicant')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "6817b987-a830-4d54-8116-f3ff2eaf2464",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.pointer-events-auto",
+      "targets": [
+        ["css=.pointer-events-auto", "css:finder"],
+        ["xpath=//li", "xpath:position"]
+      ],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "7188ff69-35a7-462a-a8ab-5fa01d4a8fd9",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["bf6e8849-3a9d-4200-ba04-4e59ee267c2b"]
+  }],
+  "urls": ["http://localhost:3000/"],
+  "plugins": []
+}

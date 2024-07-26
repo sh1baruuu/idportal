@@ -1,11 +1,11 @@
 'use client';
 
-import { auth } from '@/config/firebase/firebaseConfig';
-import { signIn, signOut } from '@/services/firebaseAuth';
-import SignInCredential from '@/types/LogInCredential';
-import { removeAuthToken, setAuthToken } from '@/utils/authToken';
-import { getSignInErrorMessage } from '@/utils/errorMessages';
-import { validateEmail } from '@/utils/validation';
+import { auth } from '@/config/firebaseConfig';
+import { removeAuthToken, setAuthToken } from '@/lib/authToken';
+import { getSignInErrorMessage } from '@/lib/errorMessages';
+import { validateEmail } from '@/lib/validation';
+import { signIn, signOut } from '@/services/firebaseAuthService';
+import { LogInCredential } from '@/types';
 import { useKeepMeLoggedInStore } from '@/zustand';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { createContext, useContext, useEffect, useState } from 'react';
@@ -20,24 +20,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (!auth) return;
 
         return onAuthStateChanged(auth, async (user) => {
+            
             if (!user) {
                 setCurrentUser(null);
                 removeAuthToken();
             }
+
             if (user) {
                 const token = await user.getIdToken();
+
                 setAuthToken(token, keepMeLoggedIn);
                 setCurrentUser(user);
             }
         });
     }, [auth, keepMeLoggedIn]);
 
-    const onSignIn = async (
-        signInCredential: SignInCredential
+    const onLogIn = async (
+        logInCredential: LogInCredential
     ): Promise<User> => {
         try {
-            await validateEmail(signInCredential);
-            const { user } = await signIn(signInCredential);
+            await validateEmail(logInCredential);
+            const { user } = await signIn(logInCredential);
             return user;
         } catch (error: any) {
             throw new Error(getSignInErrorMessage(error.code));
@@ -58,7 +61,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         <AuthContext.Provider
             value={{
                 currentUser,
-                onSignIn,
+                onLogIn,
                 onSignOut,
             }}
         >
