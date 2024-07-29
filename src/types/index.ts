@@ -51,6 +51,5 @@ export interface GetAllApplicantsParams extends PaginationParams, SearchParams, 
 
 export type TricycleArr = z.infer<typeof TricycleArraySchema>[number];
 export type Applicant = z.infer<typeof ApplicantSchema>;
-export type AddApplicant = z.infer<typeof AddApplicantSchema>;
-
+export type AddApplicant = z.infer<typeof AddApplicantSchema>
 

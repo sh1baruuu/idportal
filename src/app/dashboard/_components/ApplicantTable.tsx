@@ -34,6 +34,8 @@ import {
 import { useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
 import DeleteDialog from './DeleteDialog';
+import { useRouter } from 'next/navigation';
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
 export interface Applicant {
     applicationNo: string;
@@ -50,10 +52,11 @@ interface Props {
     isLoading: boolean;
     pageSize: number;
     refetch: () => void;
+    router: AppRouterInstance
 }
 
 const ApplicantTable: React.FC<Props> = (props) => {
-    const { data, isLoading, pageSize, refetch } = props;
+    const { data, isLoading, pageSize, refetch, router } = props;
     const [openDialog, setOpenDialog] = useState<boolean>(false);
 
     const { mutateAsync, isPending, error } = trpc.deleteApplicant.useMutation(
@@ -111,7 +114,7 @@ const ApplicantTable: React.FC<Props> = (props) => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align='end'>
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                        <DropdownMenuItem onClick={()=>router.push(`applicants/update?id=${r.applicationNo}`)}>Edit</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setOpenDialog(true)}>
                             Delete
                         </DropdownMenuItem>
