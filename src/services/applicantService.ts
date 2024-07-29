@@ -1,6 +1,7 @@
+import { CardFooter } from '@/components/ui/card';
 import db from '@/db/db';
 import { applicant, tricycle } from '@/db/schema';
-import { AddApplicant, GetAllApplicantsParams } from '@/types';
+import { AddApplicant, Applicant, GetAllApplicantsParams } from '@/types';
 import { and, asc, desc, eq, ilike, or, sql } from 'drizzle-orm';
 import { BatchItem } from 'drizzle-orm/batch';
 
@@ -36,6 +37,33 @@ export const addApplicant = async (input: AddApplicant) => {
         throw new Error("Failed to add applicant and tricycle.");
     }
 };
+
+export const updateApplicant = async (input: Applicant) => {
+    return await db.update(applicant).set({
+        applicationType: input.applicationType,
+        fullname: input.fullname,
+        address: input.address,
+        contactNo: input.contactNo,
+        licenseNo: input.licenseNo,
+        applicationDate: JSON.stringify(input.applicationDate),
+        driverName: input.driverName,
+        driverLicenseNo: input.driverLicenseNo,
+    }).where(eq(applicant.applicationNo, input.applicationNo)).returning({ updatedId: applicant.applicationNo });
+}
+
+export const getApplicantById = async (applicantNo: string) => {
+    const data = await db.select().from(applicant).where(eq(applicant.applicationNo, applicantNo));
+
+    if (data.length > 0) {
+
+        return {
+            exists: true,
+            ...data[0],
+        };
+    }
+
+    return { exists: false };
+}
 
 export const countApplicant = async () => {
     const [{ count }] = await db

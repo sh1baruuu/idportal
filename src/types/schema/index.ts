@@ -35,6 +35,8 @@ export const AddApplicantSchema = z.object({
     tricycle: TricycleArraySchema
 })
 
+
+
 export const ApplicantPaginationSchema = z.object({
     search: z.string().nullable(),
     page: z.number().min(1).default(1),
@@ -46,5 +48,7 @@ export const ApplicantPaginationSchema = z.object({
 export const ApplicantDeleteSchema = z.object({
     applicantId: z.string()
 })
+
+export const ApplicantGetByIdSchema = z.string();
 
 

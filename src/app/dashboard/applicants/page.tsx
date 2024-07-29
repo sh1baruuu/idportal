@@ -97,6 +97,7 @@ export default function ApplicantsTab() {
                                 data={data?.applicants}
                                 pageSize={pageSize}
                                 refetch={refetch}
+                                router={router}
                             />
                             <EmptyTableIndicator
                                 search={search}
