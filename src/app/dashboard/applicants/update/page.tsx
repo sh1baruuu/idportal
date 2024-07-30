@@ -20,7 +20,6 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover';
 import { cn, handleInput, handleKeyDown } from '@/lib/utils';
-import { z } from 'zod';
 
 import { trpc } from '@/app/_trpc/client';
 import { Badge } from '@/components/ui/badge';
@@ -41,8 +40,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { toast } from '@/components/ui/use-toast';
-import { Applicant, Tricycle } from '@/types';
-import { ApplicantFormSchema, ApplicantSchema, TricycleSchema } from '@/types/schema';
+import { Applicant } from '@/types';
+import { ApplicantFormSchema } from '@/types/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -141,7 +140,7 @@ export default function UpdateApplicantPage() {
     return (
         <Dialog onOpenChange={routerBack} defaultOpen>
             
-            <DialogContent className="sm:min-w-fit">
+            <DialogContent className="sm:min-w-fit px-1 md:px-6 max-h-screen  md:max-h-[95vh] lg:max-h-screen overflow-y-auto">
             <DialogHeader>
                 <DialogTitle className='sr-only'>
                 UPDATE APPLICANT
