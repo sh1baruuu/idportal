@@ -37,8 +37,8 @@ const DeleteDialog: React.FC<Props> = ({
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => onDelete(id)}>
-                        Continue
+                    <AlertDialogAction className='bg-destructive hover:bg-red-400' onClick={() => onDelete(id)}>
+                        Delete
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

@@ -114,7 +114,8 @@ const ApplicantTable: React.FC<Props> = (props) => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align='end'>
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={()=>router.push(`applicants/update?id=${r.applicationNo}`)}>Edit</DropdownMenuItem>
+                        <DropdownMenuItem onClick={()=>router.push(`applicants/update?id=${r.applicationNo}&mode=applicant`)}>Update Applicant</DropdownMenuItem>
+                        <DropdownMenuItem onClick={()=>router.push(`applicants/update?id=${r.applicationNo}&mode=tricycle`)}>View Tricycle</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setOpenDialog(true)}>
                             Delete
                         </DropdownMenuItem>
