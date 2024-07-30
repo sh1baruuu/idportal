@@ -60,7 +60,7 @@ export default function UpdateApplicantPage() {
         resolver: zodResolver(ApplicantFormSchema),
         defaultValues: {
             applicationNo: '',
-            applicationType: 'Driver/Operator',
+            applicationType: '',
             fullname: '',
             address: '',
             contactNo: '',
@@ -71,7 +71,7 @@ export default function UpdateApplicantPage() {
         },
     });
 
-    const { applicationNo, applicationType, fullname, licenseNo } =
+    const { applicationType, fullname, licenseNo } =
         applicantForm.watch();
 
     const [isDriverOperator, setIsDriverOperator] = useState<boolean>(false);
@@ -88,7 +88,7 @@ export default function UpdateApplicantPage() {
                 }
             });
         }
-        
+
         if (applicationType === 'Driver/Operator') {
             setIsDriverOperator(true);
         } else {
@@ -139,7 +139,7 @@ export default function UpdateApplicantPage() {
     }
 
     return (
-        <Dialog open={true} onOpenChange={routerBack}>
+        <Dialog onOpenChange={routerBack} defaultOpen>
             
             <DialogContent className="sm:min-w-fit">
             <DialogHeader>
@@ -174,7 +174,7 @@ export default function UpdateApplicantPage() {
                                         details:
                                     </CardDescription>
                                 </CardHeader>
-                                <CardContent>
+                                <CardContent >
                                     <div className='grid md:grid-cols-4 lg:grid-cols-3 gap-6'>
                                         <FormField
                                             control={applicantForm.control}
@@ -444,7 +444,7 @@ export default function UpdateApplicantPage() {
                                     Discard
                                 </Button>
                                 <Button type='submit' onClick={onSubmit} size='sm'>
-                                    Update Applicant
+                                    Save Changes
                                 </Button>
                             </div>
                         </div>
