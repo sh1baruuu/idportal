@@ -1,10 +1,8 @@
 import db from '@/db/db';
 import { applicant, tricycle } from '@/db/schema';
 import { deleteTricycleType } from '@/server/controllers/TricycleController';
-import { GetAllTricyclesParams, Tricycles } from '@/types';
+import { GetAllTricyclesParams, Tricycle } from '@/types';
 import { asc, desc, eq, ilike, or, sql } from 'drizzle-orm';
-
-
 
 
 const getAllTricycles = async ({ page, pageSize, order, search }: GetAllTricyclesParams) => {
@@ -23,8 +21,8 @@ const getAllTricycles = async ({ page, pageSize, order, search }: GetAllTricycle
             ilike(tricycle.chassisNo, `%${search}%`),
             ilike(tricycle.engineNo, `%${search}%`),
             ilike(tricycle.plateOrStickerNo, `%${search}%`),
-            // ilike(tricycle.driverLicenseNo, `%${search}%`),
-            // ilike(tricycle.driverName, `%${search}%`)
+            ilike(applicant.driverLicenseNo, `%${search}%`),
+            ilike(applicant.driverName, `%${search}%`)
         );
     }
 
@@ -65,11 +63,19 @@ const getAllTricycles = async ({ page, pageSize, order, search }: GetAllTricycle
     };
 };
 
-const deleteTricycleByApplicantId = async (input: deleteTricycleType) => {
+const deleteTricycleById = async (input: deleteTricycleType) => {
     const { plateNo } = input;
     return await db.delete(tricycle).where(eq(tricycle.plateOrStickerNo, plateNo)).returning({ plateNo: tricycle.plateOrStickerNo })
 }
 
+const getTricycleById = async (applicantNo: string) => {
+    return await db.select().from(tricycle).where(eq(tricycle.applicantId, applicantNo));
+}
+
+const addTricycle = async (input: Tricycle) => {
+    return await db.insert(tricycle).values(input).returning({ plateNo: tricycle.plateOrStickerNo});;
+}
 
 
-export { deleteTricycleByApplicantId, getAllTricycles };
+export { deleteTricycleById, getAllTricycles, getTricycleById, addTricycle };
+

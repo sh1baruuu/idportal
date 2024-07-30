@@ -49,6 +49,6 @@ export const ApplicantDeleteSchema = z.object({
     applicantId: z.string()
 })
 
-export const ApplicantGetByIdSchema = z.string();
+export const GetByIdSchema = z.string();
 
 
