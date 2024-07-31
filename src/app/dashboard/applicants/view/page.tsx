@@ -84,7 +84,7 @@ export default function ViewApplicantPage() {
                                     Application Details
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent >
+                            <CardContent className='pb-0'>
                                 <div className='grid md:grid-cols-4 lg:grid-cols-3 gap-6'>
 
                                     <div className='flex flex-col col-span-2'>
@@ -109,7 +109,7 @@ export default function ViewApplicantPage() {
                                 <CardTitle className='font-bold'>Personal Information</CardTitle>
 
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className='pb-0'>
                                 <div className='grid gap-6'>
                                     <div className='flex flex-col'>
                                         <Label htmlFor='fullname'>
@@ -154,7 +154,7 @@ export default function ViewApplicantPage() {
                                 <CardHeader>
                                     <CardTitle className='font-bold'>Official Driver</CardTitle>
                                 </CardHeader>
-                                <CardContent>
+                                <CardContent className='pb-0'>
                                     <div className='md:grid-cols-2 gap-6 grid pb-2'>
                                         <div className='flex flex-col'>
                                             <Label>Fullname</Label>

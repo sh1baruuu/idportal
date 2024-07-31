@@ -85,10 +85,10 @@ const ApplicantTable: React.FC<Props> = (props) => {
             </TableCell>
             <TableCell>{r.address}</TableCell>
             <TableCell>
-                <Badge variant='outline'>{r.licenseNo}</Badge>
+                {r.licenseNo}
             </TableCell>
             <TableCell className='hidden md:table-cell'>
-                {r.applicationType}
+                <Badge variant='outline'>{r.applicationType}</Badge>
             </TableCell>
             <TableCell>
                 <p>{r.ownedTricycles}</p>

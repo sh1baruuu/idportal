@@ -68,7 +68,7 @@ export const getApplicantById = async (applicantNo: string) => {
 export const viewApplicantById = async (applicantNo: string) => {
     const data = await db.select().from(applicant).where(eq(applicant.applicationNo, applicantNo));
 
-    return {...data[0]}
+    return { ...data[0] }
 }
 
 export const countApplicant = async () => {
