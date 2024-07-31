@@ -7,7 +7,7 @@ import {
     CardContent
 } from '@/components/ui/card';
 import { Tabs } from '@/components/ui/tabs';
-import { File } from 'lucide-react';
+import { File, RefreshCw } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import CardCustomHeader from '../_components/CardCustomHeader';
@@ -23,7 +23,7 @@ export default function TricyclesTab() {
     const search = searchParams.get('s');
     const pageSize = 10;
 
-    const { data, isLoading, refetch } = trpc.getAllTricycles.useQuery({
+    const { data, isLoading, refetch, isRefetching } = trpc.getAllTricycles.useQuery({
         search,
         page,
         pageSize,
@@ -34,7 +34,7 @@ export default function TricyclesTab() {
     const end = Math.min(page * pageSize, data?.total ?? 0);
     const total = data?.total ?? 0;
 
-    useEffect(()=>{
+    useEffect(() => {
         refetch();
     }, [])
 
@@ -44,6 +44,14 @@ export default function TricyclesTab() {
                 <Tabs>
                     <div className='flex items-center'>
                         <div className='ml-auto flex items-center gap-2'>
+                            <Button
+                                size='sm'
+                                variant='outline'
+                                className='h-7 gap-1'
+                                onClick={() => refetch()}
+                            >
+                                <RefreshCw className={`h-3.5 w-3.5 ${isRefetching ? "animate-spin" : ""}`} />
+                            </Button>
                             <SortDropdownMenu sort={order} sortBy={setOrder} />
                             <Button
                                 size='sm'

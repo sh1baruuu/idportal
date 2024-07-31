@@ -4,7 +4,7 @@ import { trpc } from '@/app/_trpc/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { File, PlusCircle } from 'lucide-react';
+import { File, PlusCircle, RefreshCcw, RefreshCw } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import ApplicantTable from '../_components/ApplicantTable';
@@ -24,7 +24,7 @@ export default function ApplicantsTab() {
     const search = searchParams.get('s');
     const pageSize = 10;
 
-    const { isLoading, data, refetch } = trpc.getAllApplicants.useQuery({
+    const { isLoading, data, refetch, isRefetching } = trpc.getAllApplicants.useQuery({
         search,
         page,
         pageSize,
@@ -62,6 +62,14 @@ export default function ApplicantsTab() {
                         })}
                     </TabsList>
                     <div className='ml-auto flex items-center gap-2'>
+                        <Button
+                            size='sm'
+                            variant='outline'
+                            className='h-7 gap-1'
+                            onClick={()=>refetch()}
+                        >
+                            <RefreshCw className={`h-3.5 w-3.5 ${isRefetching ? "animate-spin" : ""}`} />
+                        </Button>
                         <SortDropdownMenu sort={order} sortBy={setOrder} />
                         <Button
                             size='sm'

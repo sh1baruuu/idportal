@@ -1,6 +1,5 @@
-import { CardFooter } from '@/components/ui/card';
 import db from '@/db/db';
-import { applicant, tricycle } from '@/db/schema';
+import { action, applicant, tricycle } from '@/db/schema';
 import { AddApplicant, Applicant, GetAllApplicantsParams } from '@/types';
 import { and, asc, desc, eq, ilike, or, sql } from 'drizzle-orm';
 import { BatchItem } from 'drizzle-orm/batch';
@@ -63,6 +62,12 @@ export const getApplicantById = async (applicantNo: string) => {
     }
 
     return { exists: false };
+}
+
+export const viewApplicantById = async (applicantNo: string) => {
+    const data = await db.select().from(applicant).where(eq(applicant.applicationNo, applicantNo));
+
+    return { ...data[0] }
 }
 
 export const countApplicant = async () => {
@@ -140,6 +145,10 @@ export const deleteApplicant = async (applicantId: string) => {
     const response = await db.batch([
         db.delete(tricycle).where(eq(tricycle.applicantId, applicantId)),
         db.delete(applicant).where(eq(applicant.applicationNo, applicantId)).returning({ id: applicant.applicationNo }),
+        db.insert(action).values({
+            name: applicantId,
+            action: "DELETE"
+        })
     ])
 
     return response;

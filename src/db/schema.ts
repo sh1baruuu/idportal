@@ -1,9 +1,8 @@
-import { date, pgTable, serial, varchar } from 'drizzle-orm/pg-core';
-
+import { date, pgTable, serial, timestamp, varchar } from 'drizzle-orm/pg-core';
 
 export const applicant = pgTable('applicant_tb', {
     applicationNo: varchar('application_no').primaryKey().notNull(),
-    applicationType: varchar('application_type').notNull(), 
+    applicationType: varchar('application_type').notNull(),
     fullname: varchar('fullname').notNull(),
     address: varchar('address').notNull(),
     contactNo: varchar('contact_no').notNull(),
@@ -22,7 +21,12 @@ export const tricycle = pgTable('tricycle_tb', {
     applicantId: varchar('applicant_id').references(() => applicant.applicationNo).notNull(),
 });
 
-
+export const action = pgTable("action_tb", {
+    aid: serial('id').primaryKey(),
+    name: varchar("name").notNull(),
+    action: varchar("action").notNull(),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+})
 
 
 

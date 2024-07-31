@@ -73,11 +73,6 @@ const navItems: NavItems[] = [
         icon: Bike,
         path: 'tricycles',
     },
-    {
-        label: 'Users',
-        icon: Users2,
-        path: 'users',
-    },
 ];
 
 export default function DashboardLayout({ children }: Readonly<Props>) {

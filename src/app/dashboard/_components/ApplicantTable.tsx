@@ -21,21 +21,10 @@ import {
 import { TRPCError } from '@trpc/server';
 import TableRowLoader from './TableRowLoader';
 
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
-import DeleteDialog from './DeleteDialog';
-import { useRouter } from 'next/navigation';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
+import { useState } from 'react';
+import DeleteDialog from './DeleteDialog';
 
 export interface Applicant {
     applicationNo: string;
@@ -85,17 +74,21 @@ const ApplicantTable: React.FC<Props> = (props) => {
         }
     };
 
+    const openMenu = () => {
+        alert("open")
+    }
+
     const ApplicantRows = data?.map((r) => (
-        <TableRow key={r.applicationNo}>
+        <TableRow key={r.applicationNo} className='cursor-pointer' onDoubleClick={() => router.push(`applicants/view?id=${r.applicationNo}&view=true`)}>
             <TableCell className='font-semibold uppercase'>
                 {r.fullname}
             </TableCell>
             <TableCell>{r.address}</TableCell>
             <TableCell>
-                <Badge variant='outline'>{r.licenseNo}</Badge>
+                {r.licenseNo}
             </TableCell>
             <TableCell className='hidden md:table-cell'>
-                {r.applicationType}
+                <Badge variant='outline'>{r.applicationType}</Badge>
             </TableCell>
             <TableCell>
                 <p>{r.ownedTricycles}</p>
@@ -114,23 +107,25 @@ const ApplicantTable: React.FC<Props> = (props) => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align='end'>
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={()=>router.push(`applicants/update?id=${r.applicationNo}&mode=applicant`)}>Update Applicant</DropdownMenuItem>
-                        <DropdownMenuItem onClick={()=>router.push(`applicants/update?id=${r.applicationNo}&mode=tricycle`)}>View Tricycle</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => router.push(`applicants/view?id=${r.applicationNo}&view=true`)}>View</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => router.push(`applicants/update?id=${r.applicationNo}&mode=applicant`)}>Update</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => router.push(`applicants/update?id=${r.applicationNo}&mode=tricycle`)}>Tricycles</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setOpenDialog(true)}>
                             Delete
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
                 <DeleteDialog
-                        id={r.applicationNo}
-                        open={openDialog}
-                        onOpenChange={closeDialog}
-                        onDelete={deleteApplicant}
-                        description={` This action cannot be undone. This will permanently
+                    id={r.applicationNo}
+                    open={openDialog}
+                    onOpenChange={closeDialog}
+                    onDelete={deleteApplicant}
+                    description={` This action cannot be undone. This will permanently
                             delete applicant data (ID: ${r.applicationNo}) from our
                             server.`}
                 />
             </TableCell>
+
         </TableRow>
     ));
 
