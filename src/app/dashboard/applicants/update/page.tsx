@@ -58,6 +58,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import DeleteDialog from '../../_components/DeleteDialog';
+import ApplicantSpinner from '../../_components/ApplicantSpinner';
 
 
 export default function UpdateApplicantPage() {
@@ -241,7 +242,7 @@ export default function UpdateApplicantPage() {
     };
 
     if (isLoading) {
-        return <h1>Loading</h1>
+        return <ApplicantSpinner />
     }
 
     if (data?.exists === false) {
@@ -597,7 +598,7 @@ export default function UpdateApplicantPage() {
                         </div>
                         <Card className=' shadow-none'>
                             <CardHeader className='pb-3'>
-                                <CardTitle>Driver Information</CardTitle>
+                                <CardTitle>DRIVER INFORMATION</CardTitle>
                             </CardHeader>
                             <CardContent className='pt-0'>
                                 <div>
