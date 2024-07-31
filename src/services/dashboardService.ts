@@ -1,5 +1,5 @@
 import db from "@/db/db";
-import { applicant, tricycle } from "@/db/schema";
+import { action, applicant, tricycle } from "@/db/schema";
 import { desc, eq, sql } from "drizzle-orm";
 
 export const getDashboardData = async () => {
@@ -26,11 +26,19 @@ export const getDashboardData = async () => {
     }
 }
 
-
 export const getRecentApplicants = async () => {
     return await db
         .select()
         .from(applicant)
         .orderBy(desc(applicant.applicationDate))
-        .limit(6);
+        .limit(5);
 }
+
+export const getRecentActions = async () => {
+    return await db
+        .select()
+        .from(action)
+        .orderBy(desc(action.createdAt))
+        .limit(5);
+}
+
