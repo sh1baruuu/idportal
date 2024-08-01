@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
+import EmptyRecentApplicant from "./EmptyRecentApplicant";
 
 
 const RecentApplicantCard = () => {
@@ -16,6 +17,8 @@ const RecentApplicantCard = () => {
     useEffect(() => {
         refetch()
     }, [])
+
+    const dataExist = data && data.length > 0
 
     return (
         <Card className='xl:col-span-2'>
@@ -27,14 +30,14 @@ const RecentApplicantCard = () => {
                     </CardDescription>
                 </div>
                 <Button asChild size='sm' className='ml-auto gap-1'>
-                    <Link href='http://localhost:3000/dashboard/applicants'>
+                    {dataExist && <Link href={`${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/applicants`}>
                         View All
                         <ArrowUpRight className='h-4 w-4' />
-                    </Link>
+                    </Link>}
                 </Button>
             </CardHeader>
             <CardContent>
-                <Table>
+                {dataExist ? <Table>
                     <TableHeader>
                         <TableRow>
                             <TableHead>Applicant</TableHead>
@@ -71,8 +74,10 @@ const RecentApplicantCard = () => {
                             })
                         }
 
+
+
                     </TableBody>
-                </Table>
+                </Table> : <EmptyRecentApplicant />}
             </CardContent>
         </Card>
     )

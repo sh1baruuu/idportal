@@ -117,7 +117,7 @@ export default function AddRegistrantPage() {
         const uaid = (): string => {
             const nanoid = customAlphabet('1234567890', 10);
 
-            return `APP-${nanoid()}`;
+            return `${nanoid()}`;
         };
         if (countApplicant.data) {
             applicantForm.setValue('applicationNo', uaid());
