@@ -113,21 +113,13 @@ export default function ViewApplicantPage() {
                                 <div className='grid gap-6'>
                                     <div className='flex flex-col'>
                                         <Label htmlFor='fullname'>
-                                            Fullname{' '}
-                                            <span className='text-muted-foreground italic text-xs'>
-                                                (First Name Middle Initial
-                                                Last Name)
-                                            </span>
+                                            Fullname
                                         </Label>
                                         <p className='text-muted-foreground py-2 text-sm'>{fullname}</p>
                                     </div>
                                     <div className='flex flex-col'>
                                         <Label htmlFor='address'>
-                                            Address{' '}
-                                            <span className='text-muted-foreground italic text-xs'>
-                                                (No. Street, Barangay,
-                                                Municipality, Province)
-                                            </span>
+                                            Address
                                         </Label>
                                         <p className='text-muted-foreground py-2 text-sm'>{address}</p>
                                     </div>

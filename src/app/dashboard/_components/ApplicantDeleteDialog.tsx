@@ -10,19 +10,21 @@ import {
 } from '@/components/ui/alert-dialog';
 
 interface Props {
-    onDelete: (id: string) => Promise<void>;
+    onDelete: (applicantId: string, fullname: string) => Promise<void>;
     onOpenChange: () => void;
     open: boolean;
     description: string;
     id: string;
+    name: string;
 }
 
-const DeleteDialog: React.FC<Props> = ({
+const ApplicantDeleteDialog: React.FC<Props> = ({
     onDelete,
     onOpenChange,
     open,
     description,
     id,
+    name
 }) => {
     return (
         <AlertDialog onOpenChange={onOpenChange} open={open}>
@@ -37,7 +39,7 @@ const DeleteDialog: React.FC<Props> = ({
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction className='bg-destructive hover:bg-red-400' onClick={() => onDelete(id)}>
+                    <AlertDialogAction className='bg-destructive hover:bg-red-400' onClick={() => onDelete(id ?? "", name)}>
                         Delete
                     </AlertDialogAction>
                 </AlertDialogFooter>
@@ -46,4 +48,4 @@ const DeleteDialog: React.FC<Props> = ({
     );
 };
 
-export default DeleteDialog;
+export default ApplicantDeleteDialog;

@@ -1,6 +1,5 @@
 'use client';
 
-
 import { CalendarIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
 
@@ -57,7 +56,7 @@ import { Minus, Plus } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import DeleteDialog from '../../_components/DeleteDialog';
+import TricycleDeleteDialog from '../../_components/TricycleDeleteDialog';
 import ApplicantSpinner from '../../_components/ApplicantSpinner';
 
 
@@ -112,6 +111,8 @@ export default function UpdateApplicantPage() {
 
     const [isDriverOperator, setIsDriverOperator] = useState<boolean>(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+    const [selectedPlateNo, setSelectedPlateNo] = useState<string>("");
+
 
     const closeDeleteDialog = () => setOpenDeleteDialog(false);
 
@@ -632,51 +633,39 @@ export default function UpdateApplicantPage() {
                                     </TableHeader>
                                     <TableBody>
                                         {getTricycleById.data?.map(
-                                            (
-                                                {
-                                                    makeOrBrand,
-                                                    engineNo,
-                                                    chassisNo,
-                                                    plateOrStickerNo,
-                                                },
-                                                i
-                                            ) => {
+                                            ({ makeOrBrand, engineNo, chassisNo, plateOrStickerNo }) => {
                                                 return (
-                                                    <TableRow key={i}>
+                                                    <TableRow key={plateOrStickerNo}>
                                                         <TableCell className='font-semibold text-nowrap w-32'>
                                                             {makeOrBrand}
                                                         </TableCell>
-                                                        <TableCell>
-                                                            {engineNo}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            {chassisNo}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            {plateOrStickerNo}
-                                                        </TableCell>
+                                                        <TableCell>{engineNo}</TableCell>
+                                                        <TableCell>{chassisNo}</TableCell>
+                                                        <TableCell>{plateOrStickerNo}</TableCell>
                                                         <TableCell className='w-28 flex justify-end'>
                                                             <Button
                                                                 type='button'
                                                                 variant='ghost'
-                                                                onClick={() => setOpenDeleteDialog(true)}
+                                                                onClick={() => {
+                                                                    setSelectedPlateNo(plateOrStickerNo);
+                                                                    setOpenDeleteDialog(true);
+                                                                }}
                                                             >
                                                                 <Minus size={20} className='text-destructive' />
                                                             </Button>
                                                         </TableCell>
-                                                        <DeleteDialog
-                                                            id={plateOrStickerNo}
-                                                            open={openDeleteDialog}
-                                                            onOpenChange={closeDeleteDialog}
-                                                            onDelete={removeTricycle}
-                                                            description={` This action cannot be undone. This will
-                                    permanently delete tricycle data (Plate No:
-                                    ${plateOrStickerNo}) from our server.`}
-                                                        />
                                                     </TableRow>
                                                 );
                                             }
                                         )}
+
+                                        <TricycleDeleteDialog
+                                            id={selectedPlateNo}
+                                            open={openDeleteDialog}
+                                            onOpenChange={closeDeleteDialog}
+                                            onDelete={removeTricycle}
+                                            description={` This action cannot be undone. This will permanently delete tricycle data (Plate No: ${selectedPlateNo}) from our server.`}
+                                        />
                                         <TableRow className='hover:bg-transparent'>
                                             <TableCell className='w-52'>
                                                 <Label

@@ -181,6 +181,8 @@ export default function AddRegistrantPage() {
                         'An applicant with this license number already exists. Please check the details and try again.',
                 });
             }
+            console.error(error);
+            
 
             toast({
                 variant: 'destructive',

@@ -25,6 +25,7 @@ export const action = pgTable("action_tb", {
     aid: serial('id').primaryKey(),
     name: varchar("name").notNull(),
     action: varchar("action").notNull(),
+    category: varchar("category").notNull(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
 })
 

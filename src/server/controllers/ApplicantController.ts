@@ -27,8 +27,7 @@ export const applicantRouter = {
         }),
     deleteApplicant: publicProcedure.input(ApplicantDeleteSchema)
         .mutation(async ({ input }) => {
-            const { applicantId } = input;
-            const response = await deleteApplicant(applicantId);
+            const response = await deleteApplicant(input);
             return response;
         })
 };

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AddApplicantSchema, ApplicantFormSchema, ApplicantSchema, TricycleArraySchema, TricycleSchema } from "./schema";
+import { AddApplicantSchema, ApplicantDeleteSchema, ApplicantFormSchema, ApplicantSchema, TricycleArraySchema, TricycleSchema } from "./schema";
 
 export interface LogInCredential {
     email: string;
@@ -52,4 +52,4 @@ export interface GetAllApplicantsParams extends PaginationParams, SearchParams, 
 export type TricycleArr = z.infer<typeof TricycleArraySchema>[number];
 export type Applicant = z.infer<typeof ApplicantSchema>;
 export type AddApplicant = z.infer<typeof AddApplicantSchema>
-
+export type ApplicantDelete = z.infer<typeof ApplicantDeleteSchema>
