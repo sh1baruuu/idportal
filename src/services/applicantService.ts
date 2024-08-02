@@ -98,6 +98,24 @@ export const countApplicant = async () => {
     return count;
 };
 
+export const exportAllApplicant = async () => {
+   return await db
+        .select({
+            name: applicant.fullname,
+            address: applicant.address,
+            licenseNo: applicant.licenseNo,
+            applicationType: applicant.applicationType,
+            diverName: applicant.driverName,
+            driverLicenseNo: applicant.driverLicenseNo,
+            ownedTricycles: sql<number>`(SELECT count(*) FROM tricycle_tb WHERE applicant_id = ${applicant.applicationNo})`,
+            applicationDate: applicant.applicationDate,
+            applicationNo: applicant.applicationNo,
+        })
+        .from(applicant)
+        .leftJoin(tricycle, eq(applicant.applicationNo, tricycle.applicantId))
+        .groupBy(applicant.applicationNo).orderBy(asc(applicant.applicationDate));
+};
+
 export const getAllApplicants = async ({ page, pageSize, filter, order, search }: GetAllApplicantsParams) => {
     const offset = (page - 1) * pageSize;
 
