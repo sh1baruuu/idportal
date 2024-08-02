@@ -1,4 +1,3 @@
-import { tricycle } from '@/db/schema';
 import { z } from "zod";
 
 
@@ -35,8 +34,6 @@ export const AddApplicantSchema = z.object({
     tricycle: TricycleArraySchema
 })
 
-
-
 export const ApplicantPaginationSchema = z.object({
     search: z.string().nullable(),
     page: z.number().min(1).default(1),
@@ -46,7 +43,8 @@ export const ApplicantPaginationSchema = z.object({
 });
 
 export const ApplicantDeleteSchema = z.object({
-    applicantId: z.string()
+    applicantId: z.string(),
+    fullname: z.string(),
 })
 
 export const GetByIdSchema = z.string();

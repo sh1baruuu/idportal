@@ -1,11 +1,11 @@
 import db from '@/db/db';
-import { applicant, tricycle } from '@/db/schema';
+import { action, applicant, tricycle } from '@/db/schema';
 import { deleteTricycleType } from '@/server/controllers/TricycleController';
 import { GetAllTricyclesParams, Tricycle } from '@/types';
 import { asc, desc, eq, ilike, or, sql } from 'drizzle-orm';
 
 
-const getAllTricycles = async ({ page, pageSize, order, search }: GetAllTricyclesParams) => {
+export const getAllTricycles = async ({ page, pageSize, order, search }: GetAllTricyclesParams) => {
     const offset = (page - 1) * pageSize;
 
     let whereClause;
@@ -63,19 +63,35 @@ const getAllTricycles = async ({ page, pageSize, order, search }: GetAllTricycle
     };
 };
 
-const deleteTricycleById = async (input: deleteTricycleType) => {
+export const deleteTricycleById = async (input: deleteTricycleType) => {
     const { plateNo } = input;
-    return await db.delete(tricycle).where(eq(tricycle.plateOrStickerNo, plateNo)).returning({ plateNo: tricycle.plateOrStickerNo })
+    const [ deleteResult ] = await db.batch([db.delete(tricycle).where(eq(tricycle.plateOrStickerNo, plateNo)).returning({ plateNo: tricycle.plateOrStickerNo }),
+        db.insert(action).values({
+            name: plateNo,
+            category: "Tricycle",
+            action: "DELETE"
+        })
+    ])
+
+    return deleteResult;
 }
 
-const getTricycleById = async (applicantNo: string) => {
+export const getTricycleById = async (applicantNo: string) => {
     return await db.select().from(tricycle).where(eq(tricycle.applicantId, applicantNo));
 }
 
-const addTricycle = async (input: Tricycle) => {
-    return await db.insert(tricycle).values(input).returning({ plateNo: tricycle.plateOrStickerNo});;
+export const addTricycle = async (input: Tricycle) => {
+    const [ insertResult ] = await db.batch([
+        db.insert(tricycle).values(input).returning({ plateNo: tricycle.plateOrStickerNo}),
+        db.insert(action).values({
+            name: input.plateOrStickerNo,
+            category: "Tricycle",
+            action: "INSERT"
+        })
+    ])
+
+    return insertResult;
 }
 
 
-export { deleteTricycleById, getAllTricycles, getTricycleById, addTricycle };
 

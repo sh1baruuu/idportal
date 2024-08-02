@@ -18,21 +18,11 @@ import { Tricycles } from '@/types';
 import { MoreHorizontal } from 'lucide-react';
 import TableRowLoader from './TableRowLoader';
 
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { useState } from 'react';
-import { TRPCError } from '@trpc/server';
-import { toast } from '@/components/ui/use-toast';
 import { trpc } from '@/app/_trpc/client';
-import DeleteDialog from './DeleteDialog';
+import { toast } from '@/components/ui/use-toast';
+import { TRPCError } from '@trpc/server';
+import { useState } from 'react';
+import TricycleDeleteDialog from './TricycleDeleteDialog';
 
 interface Props {
     data: Tricycles[] | undefined;
@@ -48,6 +38,7 @@ const TricycleTable: React.FC<Props> = ({
     refetch,
 }) => {
     const [openDialog, setOpenDialog] = useState<boolean>(false);
+    const [selectedPlateNo, setSelectedPlateNo] = useState<string>("");
 
     const closeDialog = () => setOpenDialog(false);
 
@@ -74,7 +65,7 @@ const TricycleTable: React.FC<Props> = ({
 
     const TricycleRows = data?.map((t) => {
         return (
-            <TableRow key={t.id}>
+            <TableRow key={t.plateOrStickerNo}>
                 <TableCell className='font-medium py-2 capitalize'>
                     {t.makeOrBrand}
                 </TableCell>
@@ -112,20 +103,23 @@ const TricycleTable: React.FC<Props> = ({
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuItem>Edit</DropdownMenuItem>
                             <DropdownMenuItem
-                                onClick={() => setOpenDialog(true)}
+                                onClick={() => {
+                                    setSelectedPlateNo(t.plateOrStickerNo);
+                                    setOpenDialog(true);
+                                }}
                             >
                                 Delete
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <DeleteDialog
-                        id={t.plateOrStickerNo}
+                    <TricycleDeleteDialog
+                        id={selectedPlateNo}
                         open={openDialog}
                         onOpenChange={closeDialog}
                         onDelete={deleteTricycle}
                         description={` This action cannot be undone. This will
                                     permanently delete tricycle data (Plate No:
-                                    ${t.plateOrStickerNo}) from our server.`}
+                                    ${selectedPlateNo}) from our server.`}
                     />
                 </TableCell>
             </TableRow>

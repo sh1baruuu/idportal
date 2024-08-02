@@ -1,11 +1,13 @@
 import db from '@/db/db';
 import { action, applicant, tricycle } from '@/db/schema';
-import { AddApplicant, Applicant, GetAllApplicantsParams } from '@/types';
+import { AddApplicant, Applicant, ApplicantDelete, GetAllApplicantsParams } from '@/types';
 import { and, asc, desc, eq, ilike, or, sql } from 'drizzle-orm';
 import { BatchItem } from 'drizzle-orm/batch';
 
 export const addApplicant = async (input: AddApplicant) => {
     const { applicant: app, tricycle: tri } = input;
+
+   
 
     const applicantInsertQuery = db.insert(applicant).values({
         applicationNo: app.applicationNo,
@@ -19,16 +21,26 @@ export const addApplicant = async (input: AddApplicant) => {
         driverLicenseNo: app.driverLicenseNo,
     }).returning();
 
-    const tricycleInsertQuery = db.insert(tricycle).values(tri);
+    const addActionQuery = db.insert(action).values({
+        name: app.fullname,
+        category: "Applicant",
+        action: "INSERT"
+    })
 
-    let query: [BatchItem<"pg">, ...BatchItem<"pg">[]] = [applicantInsertQuery];
+    
+
+    let query: [BatchItem<"pg">, ...BatchItem<"pg">[]] = [applicantInsertQuery, addActionQuery];
 
 
-    if (tri.length > 0) {
+    if (tri && tri.length > 0) {
+        const tricycleInsertQuery = db.insert(tricycle).values(tri);
         query.push(tricycleInsertQuery);
     }
+    
 
     try {
+        console.log(query);
+        
         const response = await db.batch(query);
         return response;
     } catch (error) {
@@ -38,7 +50,7 @@ export const addApplicant = async (input: AddApplicant) => {
 };
 
 export const updateApplicant = async (input: Applicant) => {
-    return await db.update(applicant).set({
+    const [updateResult] = await db.batch([db.update(applicant).set({
         applicationType: input.applicationType,
         fullname: input.fullname,
         address: input.address,
@@ -47,8 +59,16 @@ export const updateApplicant = async (input: Applicant) => {
         applicationDate: JSON.stringify(input.applicationDate),
         driverName: input.driverName,
         driverLicenseNo: input.driverLicenseNo,
-    }).where(eq(applicant.applicationNo, input.applicationNo)).returning({ updatedId: applicant.applicationNo });
-}
+    }).where(eq(applicant.applicationNo, input.applicationNo)).returning({ updatedId: applicant.applicationNo }),
+    db.insert(action).values({
+        name: input.fullname,
+        category: "Applicant",
+        action: "UPDATE"
+    })
+    ]);
+
+    return updateResult;
+};
 
 export const getApplicantById = async (applicantNo: string) => {
     const data = await db.select().from(applicant).where(eq(applicant.applicationNo, applicantNo));
@@ -62,13 +82,13 @@ export const getApplicantById = async (applicantNo: string) => {
     }
 
     return { exists: false };
-}
+};
 
 export const viewApplicantById = async (applicantNo: string) => {
     const data = await db.select().from(applicant).where(eq(applicant.applicationNo, applicantNo));
 
     return { ...data[0] }
-}
+};
 
 export const countApplicant = async () => {
     const [{ count }] = await db
@@ -77,7 +97,6 @@ export const countApplicant = async () => {
 
     return count;
 };
-
 
 export const getAllApplicants = async ({ page, pageSize, filter, order, search }: GetAllApplicantsParams) => {
     const offset = (page - 1) * pageSize;
@@ -140,16 +159,16 @@ export const getAllApplicants = async ({ page, pageSize, filter, order, search }
     };
 };
 
-
-export const deleteApplicant = async (applicantId: string) => {
+export const deleteApplicant = async ({ applicantId, fullname }: ApplicantDelete) => {
     const response = await db.batch([
         db.delete(tricycle).where(eq(tricycle.applicantId, applicantId)),
         db.delete(applicant).where(eq(applicant.applicationNo, applicantId)).returning({ id: applicant.applicationNo }),
         db.insert(action).values({
-            name: applicantId,
+            name: fullname,
+            category: "Applicant",
             action: "DELETE"
         })
     ])
 
     return response;
-}
+};

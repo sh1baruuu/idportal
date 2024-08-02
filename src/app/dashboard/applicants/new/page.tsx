@@ -117,7 +117,7 @@ export default function AddRegistrantPage() {
         const uaid = (): string => {
             const nanoid = customAlphabet('1234567890', 10);
 
-            return `APP-${nanoid()}`;
+            return `${nanoid()}`;
         };
         if (countApplicant.data) {
             applicantForm.setValue('applicationNo', uaid());
@@ -181,6 +181,8 @@ export default function AddRegistrantPage() {
                         'An applicant with this license number already exists. Please check the details and try again.',
                 });
             }
+            console.error(error);
+            
 
             toast({
                 variant: 'destructive',
