@@ -2,10 +2,7 @@
 
 import {
     Bike,
-    Database,
     DatabaseBackup,
-    FileInput,
-    FileOutput,
     Home,
     LineChart,
     LucideProps,
@@ -14,9 +11,10 @@ import {
     PanelLeft,
     Search,
     Settings,
+    Sheet as SheetIcon,
     ShoppingCart,
     User,
-    Users2,
+    Users2
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -30,6 +28,7 @@ import {
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -78,20 +77,16 @@ const navItems: NavItems[] = [
         path: 'tricycles',
     },
     {
-        label: 'TP Data',
-        icon: Database,
-        path: 'data',
+        label: 'Excel Data',
+        icon: SheetIcon,
+        path: 'excel-data',
     },
     {
-        label: 'Export',
+        label: 'Data Backup and Restore',
         icon: DatabaseBackup,
-        path: 'export',
+        path: 'backup-and-restore',
     },
-    {
-        label: 'Import',
-        icon: FileInput,
-        path: 'import',
-    },
+
 ];
 
 
@@ -101,6 +96,7 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
     const pathname = usePathname();
     const router = useRouter();
     const [search, setSearch] = useState<string>('');
+    const [isLogOutDialogOpen, setLogOutIsDialogOpen] = useState(false);
     const { onSignOut } = useAuth();
 
     useEffect(() => {
@@ -113,7 +109,7 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
 
         const delayDebounceFn = setTimeout(() => {
             router.replace(`${pathname}?${params.toString()}`);
-        }, 300); 
+        }, 300);
 
         return () => clearTimeout(delayDebounceFn);
     }, [search]);
@@ -137,13 +133,18 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
     };
 
     const handleSearchClick = () => {
-        if (pathname === "/dashboard") {
+        if (pathname === "/dashboard" || pathname === '/dashboard/backup-and-restore') {
             router.push("/dashboard/applicants")
         }
-        
+        console.log(pathname);
+
     }
 
-    const signOut = async (): Promise<void> => {
+    const toggleLogOutDialog = () => {
+        setLogOutIsDialogOpen(prev => !prev);
+    }
+
+    const signOut = async () => {
         try {
             await onSignOut();
             router.push('/login');
@@ -169,11 +170,10 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
                                 <TooltipTrigger asChild>
                                     <Link
                                         href={`/dashboard/${item.path}`}
-                                        className={`flex h-9 w-9 items-center justify-center rounded-lg  transition-colors hover:text-foreground md:h-8 md:w-8 ${
-                                            item.path === currentPath
-                                                ? 'bg-accent text-foreground'
-                                                : 'text-muted-foreground'
-                                        }`}
+                                        className={`flex h-9 w-9 items-center justify-center rounded-lg  transition-colors hover:text-foreground md:h-8 md:w-8 ${item.path === currentPath
+                                            ? 'bg-accent text-foreground'
+                                            : 'text-muted-foreground'
+                                            }`}
                                     >
                                         <item.icon className='h-5 w-5' />
                                         <span className='sr-only'>
@@ -311,11 +311,25 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
                             <DropdownMenuItem>Settings</DropdownMenuItem>
                             <DropdownMenuItem>Support</DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={signOut}>
+                            <DropdownMenuItem onClick={toggleLogOutDialog}>
                                 Logout
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
+                    <Dialog open={isLogOutDialogOpen} onOpenChange={toggleLogOutDialog}>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Confirm Logout</DialogTitle>
+                            </DialogHeader>
+                            <DialogDescription>
+                                Are you sure you want to log out? 
+                            </DialogDescription>
+                            <DialogFooter>
+                                <Button variant="outline" onClick={toggleLogOutDialog}>Cancel</Button>
+                                <Button variant="destructive" onClick={signOut}>Logout</Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
                 </header>
                 {children}
             </div>

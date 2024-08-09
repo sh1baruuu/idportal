@@ -113,3 +113,11 @@ export const importBackUpData = async ({applicantData, tricycleData}: InsertBack
         db.insert(tricycle).values(tricycleData),
     ])
 }
+
+export const clearAllData = async () => {
+    return await db.batch([
+        db.delete(tricycle),
+        db.delete(action),
+        db.delete(applicant)
+    ])
+}

@@ -9,16 +9,18 @@ import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 import EmptyRecentApplicant from "./EmptyRecentApplicant";
+import Loader from "./Loader";
+import TableRowLoader from "./TableRowLoader";
 
 
 const RecentApplicantCard = () => {
-    const { data, refetch } = trpc.getRecentApplicants.useQuery();
+    const { data, refetch, isLoading } = trpc.getRecentApplicants.useQuery();
 
     useEffect(() => {
         refetch()
     }, [])
 
-    const dataExist = data && data.length > 0
+    const dataExist = data && data.length > 0;
 
     return (
         <Card className='xl:col-span-2'>
@@ -26,7 +28,7 @@ const RecentApplicantCard = () => {
                 <div className='grid gap-2'>
                     <CardTitle>Applicants</CardTitle>
                     <CardDescription>
-                        Recent applicants from portal.
+                       {!dataExist && "No "} Recent applicants from portal.
                     </CardDescription>
                 </div>
                 <Button asChild size='sm' className='ml-auto gap-1'>
@@ -37,17 +39,17 @@ const RecentApplicantCard = () => {
                 </Button>
             </CardHeader>
             <CardContent>
-                {dataExist ? <Table>
+                 <Table>
                     <TableHeader>
-                        <TableRow>
+                        {!isLoading && dataExist && <TableRow>
                             <TableHead>Applicant</TableHead>
                             <TableHead>License No.</TableHead>
                             <TableHead>Applicantion Type</TableHead>
                             <TableHead>Application Date</TableHead>
-                        </TableRow>
+                        </TableRow>}
                     </TableHeader>
                     <TableBody>
-                        {
+                        {isLoading ? <TableRowLoader colCount={4} rowCount={5} /> : 
                             data?.map(({ applicationNo, address, fullname, licenseNo, applicationDate, applicationType }) => {
                                 return (
                                     <TableRow key={applicationNo}>
@@ -75,9 +77,9 @@ const RecentApplicantCard = () => {
                         }
 
 
-
                     </TableBody>
-                </Table> : <EmptyRecentApplicant />}
+                </Table>
+                        {!isLoading && !dataExist && <EmptyRecentApplicant />}
             </CardContent>
         </Card>
     )

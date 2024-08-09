@@ -1,4 +1,4 @@
-import { getBackUpData, getDashboardData, getRecentActions, getRecentApplicants, importBackUpData } from "@/services/dashboardService";
+import { clearAllData, getBackUpData, getDashboardData, getRecentActions, getRecentApplicants, importBackUpData } from "@/services/dashboardService";
 import { publicProcedure } from "../trpc";
 import { InsertBackUpSchema } from "@/types/schema";
 
@@ -18,5 +18,8 @@ export const dashboardRouter = {
     }),
     importBackUpData: publicProcedure.input(InsertBackUpSchema).mutation(async ({input}) => {
         return importBackUpData({...input})
+    }),
+    clearAllData: publicProcedure.mutation(async () =>{
+        return clearAllData();
     })
 }

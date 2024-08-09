@@ -6,13 +6,16 @@ import { format } from 'date-fns';
 import { Bike, UserRound } from 'lucide-react';
 import { useEffect } from 'react';
 import EmptyRecentAction from './EmptyRecentAction';
+import Loader from './Loader';
 
 const RecentActionsCard = () => {
-    const { data, refetch } = trpc.getRecentActions.useQuery();
+    const { data, refetch, isLoading } = trpc.getRecentActions.useQuery();
 
     useEffect(() => {
         refetch()
     }, [])
+
+    const dataExist = data && data.length > 0;
 
     const actionItems = data?.map(({ aid, action, createdAt, name, category }) => {
         const formattedDate = format(new Date(createdAt), 'yyyy-MM-dd hh:mm a');
@@ -43,7 +46,8 @@ const RecentActionsCard = () => {
                 <CardTitle>Recent Actions</CardTitle>
             </CardHeader>
             <CardContent className='grid gap-8'>
-                {data && data.length > 0 ? actionItems : <EmptyRecentAction />}
+                {isLoading ? <Loader className='h-[30dvh] md:h-[40dvh]' />  : actionItems }
+                {!isLoading && !dataExist && <EmptyRecentAction />}
             </CardContent>
         </Card>
     )

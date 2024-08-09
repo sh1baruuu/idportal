@@ -2,7 +2,7 @@ import Image from 'next/image'
 
 const EmptyRecentApplicant = () => {
   return (
-    <div className='flex items-center gap-3 justify-center flex-col h-[30dvh] md:h-[30dvh]'>
+    <div className='flex items-center gap-3 justify-center flex-col h-[30dvh] md:h-[40dvh]'>
       <Image
         className='opacity-20 grayscale-[80%]'
         src='/assets/no-data.png'
