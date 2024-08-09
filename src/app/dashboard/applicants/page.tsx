@@ -1,10 +1,11 @@
 'use client';
 
 import { trpc } from '@/app/_trpc/client';
+import ExportExcelButton from '@/components/ExportExcelButton';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { File, PlusCircle, RefreshCcw, RefreshCw } from 'lucide-react';
+import { PlusCircle, RefreshCw } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import ApplicantTable from '../_components/ApplicantTable';
@@ -24,6 +25,7 @@ export default function ApplicantsTab() {
     const search = searchParams.get('s');
     const pageSize = 10;
 
+    const exportApplicants = trpc.exportApplicants.useQuery();
     const { isLoading, data, refetch, isRefetching } = trpc.getAllApplicants.useQuery({
         search,
         page,
@@ -41,6 +43,7 @@ export default function ApplicantsTab() {
     }, [filter, search]);
 
     useEffect(() => {
+        exportApplicants.refetch();
         refetch();
     }, []);
 
@@ -66,21 +69,12 @@ export default function ApplicantsTab() {
                             size='sm'
                             variant='outline'
                             className='h-7 gap-1'
-                            onClick={()=>refetch()}
+                            onClick={() => refetch()}
                         >
                             <RefreshCw className={`h-3.5 w-3.5 ${isRefetching ? "animate-spin" : ""}`} />
                         </Button>
                         <SortDropdownMenu sort={order} sortBy={setOrder} />
-                        <Button
-                            size='sm'
-                            variant='outline'
-                            className='h-7 gap-1'
-                        >
-                            <File className='h-3.5 w-3.5' />
-                            <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>
-                                Export
-                            </span>
-                        </Button>
+                        <ExportExcelButton disabled={exportApplicants.isLoading} excelData={exportApplicants.data} fileName='TP Applicants' />
                         <Button
                             onClick={() => router.push('applicants/new')}
                             size='sm'

@@ -1,6 +1,6 @@
 import db from "@/db/db";
 import { action, applicant, tricycle } from "@/db/schema";
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq, asc, sql } from "drizzle-orm";
 
 export const getDashboardData = async () => {
     const [totalApplicantsResult, noOfOperatorResult, noOfDriverOperatorResult, totalTricyclesResult] = await db.batch([
@@ -42,3 +42,23 @@ export const getRecentActions = async () => {
         .limit(5);
 }
 
+export const exportTPData = async () => {
+    return await db
+        .select({
+            name: applicant.fullname,
+            address: applicant.address,
+            licenseNo: applicant.licenseNo,
+            applicationType: applicant.applicationType,
+            makeOrBrand: tricycle.makeOrBrand,
+            engineNo: tricycle.engineNo,
+            chassisNo: tricycle.chassisNo,
+            plateOrStickerNo: tricycle.plateOrStickerNo,
+            diverName: applicant.driverName,
+            driverLicenseNo: applicant.driverLicenseNo,
+            applicationDate: applicant.applicationDate,
+            applicationNo: applicant.applicationNo,
+        })
+        .from(applicant)
+        .leftJoin(tricycle, eq(applicant.applicationNo, tricycle.applicantId))
+        .orderBy(asc(applicant.applicationDate));
+};

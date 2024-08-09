@@ -1,6 +1,7 @@
-import { addApplicant, countApplicant, deleteApplicant, getAllApplicants, getApplicantById, updateApplicant, viewApplicantById } from '@/services/applicantService';
+import { addApplicant, countApplicant, deleteApplicant, exportAllApplicant, getAllApplicants, getApplicantById, updateApplicant, viewApplicantById } from '@/services/applicantService';
+import { AddApplicantSchema, ApplicantDeleteSchema, ApplicantPaginationSchema, ApplicantSchema, GetByIdSchema } from '@/types/schema';
 import { publicProcedure } from '../trpc';
-import { AddApplicantSchema, ApplicantDeleteSchema, GetByIdSchema, ApplicantPaginationSchema, ApplicantSchema } from '@/types/schema';
+import { exportTPData } from '@/services/dashboardService';
 
 export const applicantRouter = {
     addApplicant: publicProcedure
@@ -8,6 +9,12 @@ export const applicantRouter = {
         .mutation(async ({ input }) => {
             return addApplicant(input);
         }),
+    exportApplicants: publicProcedure.query(async () => {
+        return exportAllApplicant()
+    }),
+    exportTPData: publicProcedure.query(async () => {
+        return exportTPData();
+    }),
     countApplicant: publicProcedure.query(async () => {
         return countApplicant();
     }),

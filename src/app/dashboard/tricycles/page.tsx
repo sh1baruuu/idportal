@@ -15,6 +15,7 @@ import CardCustomFooter from '../_components/CardFooter';
 import EmptyTableIndicator from '../_components/EmptyTableIndicator';
 import SortDropdownMenu from '../_components/SortDropdownMenu';
 import TricycleTable from '../_components/TricycleTable';
+import ExportExcelButton from '@/components/ExportExcelButton';
 
 export default function TricyclesTab() {
     const searchParams = useSearchParams();
@@ -23,6 +24,7 @@ export default function TricyclesTab() {
     const search = searchParams.get('s');
     const pageSize = 10;
 
+    const exportTricycles = trpc.exportTricycles.useQuery();
     const { data, isLoading, refetch, isRefetching } = trpc.getAllTricycles.useQuery({
         search,
         page,
@@ -35,6 +37,7 @@ export default function TricyclesTab() {
     const total = data?.total ?? 0;
 
     useEffect(() => {
+        exportTricycles.refetch();
         refetch();
     }, [])
 
@@ -53,17 +56,8 @@ export default function TricyclesTab() {
                                 <RefreshCw className={`h-3.5 w-3.5 ${isRefetching ? "animate-spin" : ""}`} />
                             </Button>
                             <SortDropdownMenu sort={order} sortBy={setOrder} />
-                            <Button
-                                size='sm'
-                                variant='outline'
-                                className='h-7 gap-1 text-sm'
-                            >
-                                <File className='h-3.5 w-3.5' />
-                                <span className='sr-only sm:not-sr-only'>
-                                    Export
-                                </span>
-                            </Button>
-                        </div>
+                            <ExportExcelButton disabled={exportTricycles.isLoading}  excelData={exportTricycles.data} fileName='TP Tricycle' />
+                            </div>
                     </div>
                     <div className='mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'>
                         <Card>

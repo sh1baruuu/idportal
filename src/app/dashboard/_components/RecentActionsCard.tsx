@@ -1,10 +1,9 @@
 "use client";
 
 import { trpc } from '@/app/_trpc/client';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { format } from 'date-fns';
 import { Bike, UserRound } from 'lucide-react';
-import Image from 'next/image';
 import { useEffect } from 'react';
 import EmptyRecentAction from './EmptyRecentAction';
 
@@ -16,6 +15,8 @@ const RecentActionsCard = () => {
     }, [])
 
     const actionItems = data?.map(({ aid, action, createdAt, name, category }) => {
+        const formattedDate = format(new Date(createdAt), 'yyyy-MM-dd hh:mm a');
+
         return (
             <div className='flex items-center gap-4' key={aid}>
                 <div className='flex items-center justify-center bg-slate-100 rounded-full h-9 w-9 sm:flex'>
@@ -26,7 +27,7 @@ const RecentActionsCard = () => {
                         {name}
                     </p>
                     <p className='text-sm text-muted-foreground'>
-                        {createdAt}
+                        {formattedDate}
                     </p>
                 </div>
                 <div className='ml-auto font-medium text-sm'>
@@ -48,4 +49,4 @@ const RecentActionsCard = () => {
     )
 }
 
-export default RecentActionsCard
+export default RecentActionsCard;
