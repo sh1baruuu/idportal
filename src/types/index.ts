@@ -53,3 +53,33 @@ export type TricycleArr = z.infer<typeof TricycleArraySchema>[number];
 export type Applicant = z.infer<typeof ApplicantSchema>;
 export type AddApplicant = z.infer<typeof AddApplicantSchema>
 export type ApplicantDelete = z.infer<typeof ApplicantDeleteSchema>
+
+export interface TricycleExportData {
+    applicationNo: string;
+    operator: string;
+    licenseNo: string | null;
+    address: string | null;
+    makeOrBrand: string;
+    engineNo: string;
+    chassisNo: string;
+    plateOrStickerNo: string;
+    driverName: string | null;
+    driverLicenseNo: string | null;
+    applicationDate: string | null;
+}
+
+
+export interface TPExportData {
+    name: string;
+    address: string | null;
+    licenseNo: string | null;
+    applicationType: string;
+    makeOrBrand: string | null;
+    engineNo: string | null;
+    chassisNo: string | null;
+    plateOrStickerNo: string | null;
+    driverName: string | null;
+    driverLicenseNo: string | null;
+    applicationDate: string | null;
+    applicationNo: string;
+}

@@ -1,27 +1,14 @@
 import db from '@/db/db';
 import { action, applicant, tricycle } from '@/db/schema';
 import { deleteTricycleType } from '@/server/controllers/TricycleController';
-import { GetAllTricyclesParams, Tricycle } from '@/types';
+import { GetAllTricyclesParams, Tricycle, TricycleExportData } from '@/types';
 import { asc, desc, eq, ilike, or, sql } from 'drizzle-orm';
 
-interface TricycleData {
-    applicantionNo: string;
-    operator: string;
-    licenseNo: string | null;
-    address: string | null;
-    makeOrBrand: string;
-    engineNo: string;
-    chassisNo: string;
-    plateOrStickerNo: string;
-    driverName: string | null;
-    driverLicenseNo: string | null;
-    applicationDate: string | null;
-}
 
 
-export const exportAllTricycles = async (): Promise<TricycleData[]> => {
+export const exportAllTricycles = async (): Promise<TricycleExportData[]> => {
     // Fetch data from the database
-    const data: TricycleData[] = await db.select({
+    const data: TricycleExportData[] = await db.select({
         operator: sql<string>`(SELECT fullname FROM applicant_tb WHERE application_no = ${tricycle.applicantId})`,
         licenseNo: applicant.licenseNo,
         address: applicant.address,
@@ -32,32 +19,32 @@ export const exportAllTricycles = async (): Promise<TricycleData[]> => {
         driverName: applicant.driverName,
         driverLicenseNo: applicant.driverLicenseNo,
         applicationDate: applicant.applicationDate,
-        applicantionNo: tricycle.applicantId,
+        applicationNo: tricycle.applicantId,
     }).from(tricycle).leftJoin(applicant, eq(tricycle.applicantId, applicant.applicationNo)).orderBy(asc(applicant.applicationDate));
 
-    const processedData: TricycleData[] = [];
+    const processedData: TricycleExportData[] = [];
     const applicantNoCount: { [key: string]: number } = {};
-    const applicantNoMap: { [key: string]: TricycleData[] } = {};
+    const applicantNoMap: { [key: string]: TricycleExportData[] } = {};
 
     for (const item of data) {
-        const { applicantionNo } = item;
+        const { applicationNo } = item;
         
-        if (!applicantNoCount[applicantionNo]) {
-            applicantNoCount[applicantionNo] = 0;
-            applicantNoMap[applicantionNo] = [];
+        if (!applicantNoCount[applicationNo]) {
+            applicantNoCount[applicationNo] = 0;
+            applicantNoMap[applicationNo] = [];
         }
-        applicantNoCount[applicantionNo]++;
-        applicantNoMap[applicantionNo].push(item);
+        applicantNoCount[applicationNo]++;
+        applicantNoMap[applicationNo].push(item);
     }
 
-    for (const [applicantionNo, items] of Object.entries(applicantNoMap)) {
-        if (applicantNoCount[applicantionNo] > 1) {
+    for (const [applicationNo, items] of Object.entries(applicantNoMap)) {
+        if (applicantNoCount[applicationNo] > 1) {
             items.forEach((item, index) => {
                 const letterSuffix = String.fromCharCode(65 + index); 
-                const newApplicantionNo = `${applicantionNo}-${letterSuffix}`;
+                const newApplicantionNo = `${applicationNo}-${letterSuffix}`;
                 processedData.push({
                     ...item,
-                    applicantionNo: newApplicantionNo
+                    applicationNo: newApplicantionNo
                 });
             });
         } else {
@@ -67,6 +54,7 @@ export const exportAllTricycles = async (): Promise<TricycleData[]> => {
 
     return processedData;
 };
+
 export const getAllTricycles = async ({ page, pageSize, order, search }: GetAllTricyclesParams) => {
     const offset = (page - 1) * pageSize;
 

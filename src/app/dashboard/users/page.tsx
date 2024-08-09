@@ -1,9 +1,5 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { insertBarangayInitialData } from '@/db/queries';
-import { PDFViewer } from '@react-pdf/renderer';
-import MyDocument from './_document';
 
 export default function UserTab() {
     return (
