@@ -11,8 +11,6 @@ export const TricycleSchema = z.object({
     applicantId: z.string().transform((str) => str.toUpperCase())
 });
 
-export const TricycleArraySchema = z.array(TricycleSchema);
-
 export const ApplicantSchema = z.object({
     applicationNo: z.string(),
     applicationType: z.string(),
@@ -24,6 +22,9 @@ export const ApplicantSchema = z.object({
     driverName:  z.string().min(1, 'Please enter your driver name.'),
     driverLicenseNo:  z.string(),
 });
+
+export const TricycleArraySchema = z.array(TricycleSchema);
+export const ApplicantArraySchema = z.array(ApplicantSchema);
 
 export const ApplicantFormSchema = ApplicantSchema.extend({
     tricycles: TricycleArraySchema,
@@ -41,6 +42,12 @@ export const ApplicantPaginationSchema = z.object({
     filter: z.string(),
     order: z.string(),
 });
+
+export const InsertBackUpSchema = z.object({
+    applicantData: ApplicantArraySchema,
+    tricycleData: TricycleArraySchema
+})
+
 
 export const ApplicantDeleteSchema = z.object({
     applicantId: z.string(),

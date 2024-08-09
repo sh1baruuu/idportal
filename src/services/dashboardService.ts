@@ -1,6 +1,6 @@
 import db from "@/db/db";
 import { action, applicant, tricycle } from "@/db/schema";
-import { TPExportData } from "@/types";
+import { Applicant, InsertBackUp, TPExportData, Tricycle } from "@/types";
 import { desc, eq, asc, sql } from "drizzle-orm";
 
 export const getDashboardData = async () => {
@@ -94,3 +94,22 @@ export const exportTPData = async () => {
 
     return processedData;
 };
+
+export const getBackUpData = async () => {
+    const [applicantData, tricycleData] =  await db.batch([
+        db.select().from(applicant),
+        db.select().from(tricycle),
+    ])
+
+    return { 
+        applicantData,
+       tricycleData
+    }
+}
+
+export const importBackUpData = async ({applicantData, tricycleData}: InsertBackUp) => {
+    return await db.batch([
+        db.insert(applicant).values(applicantData),
+        db.insert(tricycle).values(tricycleData),
+    ])
+}

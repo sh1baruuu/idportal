@@ -7,6 +7,8 @@ import type { Metadata } from 'next';
 import { Inter as FontSans } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 import { Toaster as ShadToaster } from '@/components/ui/toaster';
+import { Suspense } from 'react';
+import Loader from './dashboard/_components/Loader';
 
 const fontSans = FontSans({
     subsets: ['latin'],
@@ -42,7 +44,9 @@ export default function RootLayout({ children }: Readonly<Props>) {
                         <TooltipProvider>
                             <Toaster toastOptions={toastOptions} />
                             <ShadToaster />
-                            {children}
+                            <Suspense fallback={<Loader className='h-screen' />}>
+                                {children}
+                            </Suspense>
                         </TooltipProvider>
                     </TRCPProvider>
                 </AuthProvider>

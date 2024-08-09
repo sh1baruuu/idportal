@@ -7,13 +7,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PlusCircle, RefreshCw } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ApplicantTable from '../_components/ApplicantTable';
 import CardCustomHeader from '../_components/CardCustomHeader';
 import CardCustomFooter from '../_components/CardFooter';
 import EmptyTableIndicator from '../_components/EmptyTableIndicator';
 import SortDropdownMenu from '../_components/SortDropdownMenu';
-import Loader from '../_components/Loader';
 
 const filterOptions: string[] = ['All', 'Operator', 'Driver/Operator'];
 
@@ -49,7 +48,6 @@ export default function ApplicantsTab() {
     }, []);
 
     return (
-        <Suspense fallback={<><Loader /></>}>
         <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>
             <Tabs defaultValue='All'>
                 <div className='flex items-center'>
@@ -122,6 +120,5 @@ export default function ApplicantsTab() {
                 </div>
             </Tabs>
         </main>
-        </Suspense>
     );
 }

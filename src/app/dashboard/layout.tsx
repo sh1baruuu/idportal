@@ -3,6 +3,9 @@
 import {
     Bike,
     Database,
+    DatabaseBackup,
+    FileInput,
+    FileOutput,
     Home,
     LineChart,
     LucideProps,
@@ -75,9 +78,19 @@ const navItems: NavItems[] = [
         path: 'tricycles',
     },
     {
-        label: 'Export data',
+        label: 'TP Data',
         icon: Database,
         path: 'data',
+    },
+    {
+        label: 'Export',
+        icon: DatabaseBackup,
+        path: 'export',
+    },
+    {
+        label: 'Import',
+        icon: FileInput,
+        path: 'import',
     },
 ];
 
