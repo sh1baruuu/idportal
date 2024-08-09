@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from '@/components/ui/button'
-import { Page, Text, View, Document, StyleSheet, Image } from '@react-pdf/renderer';
+import { Button } from '@/components/ui/button';
+import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import QRCode from 'qrcode';
 import { useEffect, useState } from 'react';
 
