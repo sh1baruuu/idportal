@@ -2,8 +2,6 @@ import * as Filesaver from "file-saver";
 import { File } from 'lucide-react';
 import XLSX from "sheetjs-style";
 import { Button } from "./ui/button";
-import { RefAttributes } from "react";
-
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     excelData: any;

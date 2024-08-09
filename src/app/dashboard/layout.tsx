@@ -2,6 +2,7 @@
 
 import {
     Bike,
+    Database,
     Home,
     LineChart,
     LucideProps,
@@ -73,7 +74,14 @@ const navItems: NavItems[] = [
         icon: Bike,
         path: 'tricycles',
     },
+    {
+        label: 'Export data',
+        icon: Database,
+        path: 'data',
+    },
 ];
+
+
 
 export default function DashboardLayout({ children }: Readonly<Props>) {
     const searchParams = useSearchParams();
@@ -114,6 +122,13 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);
     };
+
+    const handleSearchClick = () => {
+        if (pathname === "/dashboard") {
+            router.push("/dashboard/applicants")
+        }
+        
+    }
 
     const signOut = async (): Promise<void> => {
         try {
@@ -257,6 +272,7 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
                             placeholder='Search...'
                             value={search}
                             onChange={handleSearch}
+                            onClick={handleSearchClick}
                             className='w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]'
                         />
                     </div>

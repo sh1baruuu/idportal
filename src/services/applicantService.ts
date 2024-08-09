@@ -7,7 +7,7 @@ import { BatchItem } from 'drizzle-orm/batch';
 export const addApplicant = async (input: AddApplicant) => {
     const { applicant: app, tricycle: tri } = input;
 
-   
+
 
     const applicantInsertQuery = db.insert(applicant).values({
         applicationNo: app.applicationNo,
@@ -27,7 +27,7 @@ export const addApplicant = async (input: AddApplicant) => {
         action: "INSERT"
     })
 
-    
+
 
     let query: [BatchItem<"pg">, ...BatchItem<"pg">[]] = [applicantInsertQuery, addActionQuery];
 
@@ -36,11 +36,11 @@ export const addApplicant = async (input: AddApplicant) => {
         const tricycleInsertQuery = db.insert(tricycle).values(tri);
         query.push(tricycleInsertQuery);
     }
-    
+
 
     try {
         console.log(query);
-        
+
         const response = await db.batch(query);
         return response;
     } catch (error) {
@@ -99,7 +99,7 @@ export const countApplicant = async () => {
 };
 
 export const exportAllApplicant = async () => {
-   return await db
+    return await db
         .select({
             name: applicant.fullname,
             address: applicant.address,
@@ -115,6 +115,7 @@ export const exportAllApplicant = async () => {
         .leftJoin(tricycle, eq(applicant.applicationNo, tricycle.applicantId))
         .groupBy(applicant.applicationNo).orderBy(asc(applicant.applicationDate));
 };
+
 
 export const getAllApplicants = async ({ page, pageSize, filter, order, search }: GetAllApplicantsParams) => {
     const offset = (page - 1) * pageSize;
