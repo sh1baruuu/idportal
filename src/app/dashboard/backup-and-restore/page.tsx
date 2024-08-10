@@ -200,7 +200,7 @@ export default function AddRegistrantPage() {
                     </CardFooter>
                 </Card>
 
-                <Card className='border-red-300 shadow-none'>
+                <Card className='border-red-300 dark:border-destructive shadow-none'>
                     <CardHeader>
                         <CardTitle>Clear all data</CardTitle>
                         <CardDescription>

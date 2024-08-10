@@ -4,7 +4,10 @@ import {
     Bike,
     DatabaseBackup,
     Home,
+    KeyRound,
     LineChart,
+    Lock,
+    LogOut,
     LucideProps,
     Package,
     Package2,
@@ -13,6 +16,7 @@ import {
     Settings,
     Sheet as SheetIcon,
     ShoppingCart,
+    SunMoon,
     User,
     Users2
 } from 'lucide-react';
@@ -34,7 +38,13 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
+    DropdownMenuPortal,
+    DropdownMenuRadioGroup,
+    DropdownMenuRadioItem,
     DropdownMenuSeparator,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
@@ -47,6 +57,9 @@ import {
 import { useAuth } from '@/context/AuthProvider';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useTheme } from 'next-themes';
+import UpdatePasswordDialog from './_components/UpdatePasswordDialog';
+import { Label } from '@/components/ui/label';
 
 interface Props {
     children: React.ReactNode;
@@ -96,8 +109,10 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
     const pathname = usePathname();
     const router = useRouter();
     const [search, setSearch] = useState<string>('');
-    const [isLogOutDialogOpen, setLogOutIsDialogOpen] = useState(false);
+    const [isLogOutDialogOpen, setLogOutIsDialogOpen] = useState<boolean>(false);
+    const [isUpdatePasswordDialogOpen, setUpdatePasswordIsDialogOpen] = useState<boolean>(false);
     const { onSignOut } = useAuth();
+    const { setTheme, theme } = useTheme();
 
     useEffect(() => {
         const params = new URLSearchParams(searchParams);
@@ -136,12 +151,14 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
         if (pathname === "/dashboard" || pathname === '/dashboard/backup-and-restore') {
             router.push("/dashboard/applicants")
         }
-        console.log(pathname);
-
     }
 
     const toggleLogOutDialog = () => {
         setLogOutIsDialogOpen(prev => !prev);
+    }
+
+    const toggleUpdatePasswordDialog = () => {
+        setUpdatePasswordIsDialogOpen(prev => !prev);
     }
 
     const signOut = async () => {
@@ -279,8 +296,10 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
                         </BreadcrumbList>
                     </Breadcrumb>
                     <div className='relative ml-auto flex-1 md:grow-0'>
+                        <Label htmlFor='search' className='sr-only' >Search</Label>
                         <Search className='absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground' />
                         <Input
+                            id='search'
                             type='search'
                             placeholder='Search...'
                             value={search}
@@ -305,14 +324,24 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
                                 />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align='end'>
+                        <DropdownMenuContent align='end' className='min-w-56'>
                             <DropdownMenuLabel>My Account</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem>Settings</DropdownMenuItem>
-                            <DropdownMenuItem>Support</DropdownMenuItem>
+                            <DropdownMenuSub>
+                                <DropdownMenuSubTrigger><SunMoon size={16} className='stroke-muted-foreground mr-2' />Themes</DropdownMenuSubTrigger>
+                                <DropdownMenuPortal>
+                                    <DropdownMenuSubContent >
+                                        <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
+                                            <DropdownMenuRadioItem value="light">Light</DropdownMenuRadioItem>
+                                            <DropdownMenuRadioItem value="dark">Dark</DropdownMenuRadioItem>
+                                            <DropdownMenuRadioItem value="system">System</DropdownMenuRadioItem>
+                                        </DropdownMenuRadioGroup>
+                                    </DropdownMenuSubContent>
+                                </DropdownMenuPortal>
+                            </DropdownMenuSub><DropdownMenuItem onClick={toggleUpdatePasswordDialog}><Lock size={16} className='stroke-muted-foreground mr-2' />Password</DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={toggleLogOutDialog}>
-                                Logout
+                                <LogOut size={16} className='stroke-muted-foreground mr-2' /> Log out
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -322,7 +351,7 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
                                 <DialogTitle>Confirm Logout</DialogTitle>
                             </DialogHeader>
                             <DialogDescription>
-                                Are you sure you want to log out? 
+                                Are you sure you want to log out?
                             </DialogDescription>
                             <DialogFooter>
                                 <Button variant="outline" onClick={toggleLogOutDialog}>Cancel</Button>
@@ -330,6 +359,7 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>
+                    <UpdatePasswordDialog open={isUpdatePasswordDialogOpen} toggleDialog={toggleUpdatePasswordDialog} />
                 </header>
                 {children}
             </div>

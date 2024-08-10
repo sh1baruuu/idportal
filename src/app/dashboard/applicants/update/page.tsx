@@ -255,7 +255,7 @@ export default function UpdateApplicantPage() {
             return (
                 <Dialog onOpenChange={routerBack} defaultOpen>
 
-                    <DialogContent className="sm:min-w-fit px-1 md:px-6 max-h-screen  md:max-h-[95vh] lg:max-h-screen overflow-y-auto">
+                    <DialogContent className="sm:min-w-fit px-1 md:px-6 max-h-screen  md:max-h-[95vh] overflow-y-auto">
                         <DialogHeader>
                             <DialogTitle className='sr-only'>
                                 UPDATE APPLICANT

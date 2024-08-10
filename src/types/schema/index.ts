@@ -57,3 +57,17 @@ export const ApplicantDeleteSchema = z.object({
 export const GetByIdSchema = z.string();
 
 
+export const UpdatePasswordSchema = z.object({
+    currentUser: z.any(),
+    currentPassword: z.string().optional(),
+    newPassword: z.string(),
+});
+export const UpdatePasswordFormSchema = z.object({
+    currentPassword: z.string().min(1, "Current password is required"),
+    newPassword: z.string().min(6, "New password must be at least 6 characters long").min(1, "Please enter new password"),
+    confirmPassword: z.string().min(6, "Please confirm your new password"),
+}).refine(data => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+});
+

@@ -1,6 +1,7 @@
 import { auth } from "@/config/firebaseConfig";
 import { LogInCredential } from "@/types";
-import { UserCredential, signInWithEmailAndPassword } from "firebase/auth";
+import { UserCredential, signInWithEmailAndPassword, updatePassword } from "firebase/auth";
+
 
 export const signIn = async ({ email, password }: LogInCredential): Promise<UserCredential> => {
     return await signInWithEmailAndPassword(auth, email, password);

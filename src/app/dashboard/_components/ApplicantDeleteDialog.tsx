@@ -1,13 +1,13 @@
+import { Button } from '@/components/ui/button';
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 
 interface Props {
     onDelete: (applicantId: string, fullname: string) => Promise<void>;
@@ -27,24 +27,24 @@ const ApplicantDeleteDialog: React.FC<Props> = ({
     name
 }) => {
     return (
-        <AlertDialog onOpenChange={onOpenChange} open={open}>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>
+        <Dialog onOpenChange={onOpenChange} open={open}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>
                         Are you absolutely sure?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
+                    </DialogTitle>
+                    <DialogDescription>
                         {description}
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction className='bg-destructive hover:bg-red-400' onClick={() => onDelete(id ?? "", name)}>
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <DialogClose>Cancel</DialogClose>
+                    <Button className='bg-destructive dark:text-white hover:bg-red-400' onClick={() => onDelete(id ?? "", name)}>
                         Delete
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 };
 
