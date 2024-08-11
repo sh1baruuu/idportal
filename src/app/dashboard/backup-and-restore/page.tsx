@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronLeft, FileInput, FileOutput, Import, Trash2 } from 'lucide-react';
+import { ChevronLeft, FileInput, FileOutput, Import, LoaderCircle, Trash2 } from 'lucide-react';
 import {
     Card,
     CardContent,
@@ -25,6 +25,7 @@ import { useEffect, useState } from 'react';
 import { trpc } from '@/app/_trpc/client';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/components/ui/use-toast';
+import Spinner from '@/components/common/Spinner';
 
 export default function AddRegistrantPage() {
     const { push } = useRouter();
@@ -100,9 +101,6 @@ export default function AddRegistrantPage() {
     const exportData = () => {
         const currentDate = new Date().toISOString().split('T')[0];
         const fileNameEx = `${fileName}-${currentDate}.json`;
-
-
-
         const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
             JSON.stringify(getBackUpData.data)
         )}`;
@@ -175,7 +173,7 @@ export default function AddRegistrantPage() {
                         </form>
                     </CardContent>
                     <CardFooter className="border-t px-6 py-4">
-                        <Button disabled={!file} onClick={importData} className='flex gap-1'> <FileInput className="h-4 w-4" /><span>Import data</span></Button>
+                        <Button disabled={!file || importBackUpData.isPending} onClick={importData} className='flex gap-1'> {importBackUpData.isPending ? <><LoaderCircle className="h-4 w-4 animate-spin" /><span>Importing data</span></> : <><FileInput className="h-4 w-4" /><span>Import data</span></>}</Button>
                     </CardFooter>
                 </Card>
 
@@ -216,6 +214,7 @@ export default function AddRegistrantPage() {
                     <DialogContent className="sm:max-w-[425px] p-4">
                         <DialogHeader>
                             <DialogTitle>Clear all data</DialogTitle>
+                            <DialogDescription> Are you sure you want to clear all data?</DialogDescription>
                         </DialogHeader>
                         <div className="flex items-center space-x-2 ">
                             <div className="grid flex-1 gap-2">
@@ -223,7 +222,7 @@ export default function AddRegistrantPage() {
                                     To confirm, type "tpconsole/data" in the box below
                                 </Label>
                                 <Input
-                                    className='border-red-400 bg-slate-50 focus:border-none focus:outline-2'
+                                    className='border-red-400 focus:border-none focus:outline-2'
                                     id="clearDataInput"
                                     autoComplete='off'
                                     value={clearDialogInput}

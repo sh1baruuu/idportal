@@ -60,7 +60,7 @@ const ApplicantTable: React.FC<Props> = (props) => {
 
             toast({
                 title: 'Applicant Deleted',
-                description: `The applicant data (ID: ${data.id}) has been successfully deleted.`,
+                description: `The applicant data (Applicant No: ${data.id}) has been successfully deleted.`,
             });
         } catch (error) {
             if (error instanceof TRPCError) {
@@ -122,7 +122,7 @@ const ApplicantTable: React.FC<Props> = (props) => {
                     name={selectedFullname}
                     onOpenChange={closeDialog}
                     onDelete={deleteApplicant}
-                    description={`This action cannot be undone. This will permanently delete applicant data (ID: ${selectedApplicantNo}) from our server.`}
+                    description={`This action cannot be undone. This will permanently delete applicant data (Applicant No: ${selectedApplicantNo}) from our server.`}
                 />
             </TableCell>
         </TableRow>

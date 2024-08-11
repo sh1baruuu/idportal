@@ -229,7 +229,7 @@ export default function UpdateApplicantPage() {
 
             toast({
                 title: 'Applicant Updated',
-                description: `The applicant (${res[0].updatedId}) has been successfully updated.`,
+                description: `The applicant (Applicant No: ${res[0].updatedId}) has been successfully updated.`,
             });
 
             routerBack();

@@ -6,9 +6,10 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import * as Filesaver from "file-saver";
-import { Download, Loader, LoaderCircle } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import XLSX from "sheetjs-style";
+import Loader from '../_components/Loader';
 
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -50,7 +51,6 @@ const DataPage = () => {
     if (exportTPData.isLoading) {
         return <Loader />
     }
-
 
     return (
         <Dialog open={true} defaultOpen onOpenChange={routeToDashBoard} >
