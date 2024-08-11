@@ -78,12 +78,12 @@ const ApplicantTable: React.FC<Props> = (props) => {
             onDoubleClick={() => router.push(`applicants/view?id=${r.applicationNo}&view=true`)}
         >
             <TableCell className='font-semibold uppercase'>{r.fullname}</TableCell>
-            <TableCell>{r.address}</TableCell>
-            <TableCell>{r.licenseNo}</TableCell>
+            <TableCell className='hidden md:table-cell'>{r.address}</TableCell>
+            <TableCell className='hidden md:table-cell'>{r.licenseNo}</TableCell>
             <TableCell className='hidden md:table-cell'>
                 <Badge variant='outline'>{r.applicationType}</Badge>
             </TableCell>
-            <TableCell>
+            <TableCell className='hidden md:table-cell'>
                 <p>{r.ownedTricycles}</p>
             </TableCell>
             <TableCell>

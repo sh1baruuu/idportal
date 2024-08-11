@@ -1,7 +1,7 @@
 "use client";
 
 import { trpc } from '@/app/_trpc/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { format } from 'date-fns';
 import { Bike, UserRound } from 'lucide-react';
 import { useEffect } from 'react';
@@ -41,9 +41,10 @@ const RecentActionsCard = () => {
     })
 
     return (
-        <Card>
+        <Card className='hidden md:block'>
             <CardHeader>
                 <CardTitle>Recent Actions</CardTitle>
+                <CardDescription className='sr-only'>All recent action from system</CardDescription>
             </CardHeader>
             <CardContent className='grid gap-8'>
                 {isLoading ? <Loader className='h-[30dvh] md:h-[40dvh]' />  : actionItems }

@@ -138,7 +138,7 @@ export default function AddRegistrantPage() {
             className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 w-full'
         >
             <div className='mx-auto grid max-w-[59rem] flex-1 auto-rows-max w-full lg:min-w-[942px] gap-4'>
-                <div className='flex items-center gap-4'>
+                <div className='hidden md:flex items-center gap-4'>
                     <Button
                         type='button'
                         variant='outline'

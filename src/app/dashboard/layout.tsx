@@ -95,7 +95,7 @@ const navItems: NavItems[] = [
         path: 'excel-data',
     },
     {
-        label: 'Data Backup and Restore',
+        label: 'Backup and Restore',
         icon: DatabaseBackup,
         path: 'backup-and-restore',
     },
@@ -179,7 +179,7 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
                         className='group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base'
                     >
                         <Package2 className='h-4 w-4 transition-all group-hover:scale-110' />
-                        
+
                     </Link>
                     {navItems?.map((item, i) => {
                         return (
@@ -205,20 +205,6 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
                         );
                     })}
                 </nav>
-                <nav className='mt-auto flex flex-col items-center gap-4 px-2 sm:py-4'>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Link
-                                href='/'
-                                className='flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8'
-                            >
-                                <Settings className='h-5 w-5' />
-                                <span className='sr-only'>Settings</span>
-                            </Link>
-                        </TooltipTrigger>
-                        <TooltipContent side='right'>Settings</TooltipContent>
-                    </Tooltip>
-                </nav>
             </aside>
             <div className='flex flex-col sm:gap-4 sm:py-4 sm:pl-14'>
                 <header className='sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6'>
@@ -240,43 +226,23 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
                                     className='group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base'
                                 >
                                     <Package2 className='h-5 w-5 transition-all group-hover:scale-110' />
-                                    <span className='sr-only'>Acme Inc</span>
+                                    <span className='sr-only'>Tricycle Permit Console</span>
                                 </Link>
-                                <Link
-                                    href='/'
-                                    className='flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground'
-                                >
-                                    <Home className='h-5 w-5' />
-                                    Dashboard
-                                </Link>
-                                <Link
-                                    href='#'
-                                    className='flex items-center gap-4 px-2.5 text-foreground'
-                                >
-                                    <ShoppingCart className='h-5 w-5' />
-                                    Orders
-                                </Link>
-                                <Link
-                                    href='#'
-                                    className='flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground'
-                                >
-                                    <Package className='h-5 w-5' />
-                                    Products
-                                </Link>
-                                <Link
-                                    href='#'
-                                    className='flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground'
-                                >
-                                    <Users2 className='h-5 w-5' />
-                                    Customers
-                                </Link>
-                                <Link
-                                    href='#'
-                                    className='flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground'
-                                >
-                                    <LineChart className='h-5 w-5' />
-                                    Settings
-                                </Link>
+                                {navItems?.map((item, i) => {
+                                    return (
+                                        <Link
+                                            key={i}
+                                            href={`/dashboard/${item.path}`}
+                                            className={`flex text-sm items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground ${item.path === currentPath
+                                            ? 'text-foreground'
+                                            : 'text-muted-foreground'
+                                            }`}
+                                        >
+                                            <item.icon className='h-5 w-5' />
+                                            {item.label}
+                                        </Link>
+                                    );
+                                })}
                             </nav>
                         </SheetContent>
                     </Sheet>
@@ -349,11 +315,11 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
                         <DialogContent>
                             <DialogHeader>
                                 <DialogTitle>Confirm Logout</DialogTitle>
+                                <DialogDescription>
+                                    Are you sure you want to log out?
+                                </DialogDescription>
                             </DialogHeader>
-                            <DialogDescription>
-                                Are you sure you want to log out?
-                            </DialogDescription>
-                            <DialogFooter>
+                            <DialogFooter className='flex flex-col-reverse md:flex-row gap-1'>
                                 <Button variant="outline" onClick={toggleLogOutDialog}>Cancel</Button>
                                 <Button variant="destructive" onClick={signOut}>Logout</Button>
                             </DialogFooter>
