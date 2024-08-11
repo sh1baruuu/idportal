@@ -182,7 +182,7 @@ export default function AddRegistrantPage() {
                 });
             }
             console.error(error);
-            
+
 
             toast({
                 variant: 'destructive',
@@ -297,7 +297,7 @@ export default function AddRegistrantPage() {
                                                             className={cn(
                                                                 'w-[240px] pl-3 text-left font-normal',
                                                                 !field.value &&
-                                                                    'text-muted-foreground'
+                                                                'text-muted-foreground'
                                                             )}
                                                         >
                                                             {field.value ? (
@@ -321,11 +321,9 @@ export default function AddRegistrantPage() {
                                                     <Calendar
                                                         mode='single'
                                                         selected={
-                                                            field.value
-                                                                ? new Date(
-                                                                      field.value
-                                                                  )
-                                                                : new Date()
+                                                            field.value !== null && field.value !== undefined
+                                                                ? new Date(field.value) 
+                                                                : undefined 
                                                         }
                                                         onSelect={(
                                                             date:
@@ -347,9 +345,9 @@ export default function AddRegistrantPage() {
                                                         ) =>
                                                             date > new Date() ||
                                                             date <
-                                                                new Date(
-                                                                    '1900-01-01'
-                                                                )
+                                                            new Date(
+                                                                '1900-01-01'
+                                                            )
                                                         }
                                                         initialFocus
                                                     />
