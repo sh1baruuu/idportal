@@ -17,9 +17,22 @@ const fontSans = FontSans({
 });
 
 export const metadata: Metadata = {
-    title: 'Welcome to Tricycle Permit Console',
-    description: 'Developed by shibadev',
+    title: 'Tricycle Permit Console',
+    description: 'Streamline tricycle permit management with ease using our intuitive console.',
+    openGraph: {
+        title: 'Tricycle Permit Console',
+        description: 'Easily manage tricycle permits with our user-friendly console.',
+        // images: [
+        //     {
+        //         url: '/images/your-image.jpg',
+        //         width: 800,
+        //         height: 600,
+        //         alt: 'Tricycle Permit Console Interface',
+        //     },
+        // ],
+    },
 };
+
 
 interface Props {
     children: React.ReactNode;

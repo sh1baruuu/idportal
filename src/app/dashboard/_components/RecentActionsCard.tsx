@@ -2,11 +2,11 @@
 
 import { trpc } from '@/app/_trpc/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 import { Bike, UserRound } from 'lucide-react';
 import { useEffect } from 'react';
 import EmptyRecentAction from './EmptyRecentAction';
-import Loader from './Loader';
 
 const RecentActionsCard = () => {
     const { data, refetch, isLoading } = trpc.getRecentActions.useQuery();
@@ -40,6 +40,23 @@ const RecentActionsCard = () => {
         )
     })
 
+    const loaderCount = Array(4).fill(0);
+
+    const actionItemLoader = loaderCount.map((_, i) => {
+
+        return (
+            <div className='flex items-center gap-4' key={i}>
+                <Skeleton className='flex items-center justify-center bg-slate-100 rounded-full h-9 w-9 sm:flex' />
+                  
+                <div className='grid gap-1 mr-auto'>
+                    <Skeleton className='h-4 w-24'  />
+                    <Skeleton className='h-4 w-40' />
+                </div>
+                <Skeleton className='h-6 w-20' />
+            </div>
+        )
+    })
+
     return (
         <Card className='hidden md:block'>
             <CardHeader>
@@ -47,7 +64,7 @@ const RecentActionsCard = () => {
                 <CardDescription className='sr-only'>All recent action from system</CardDescription>
             </CardHeader>
             <CardContent className='grid gap-8'>
-                {isLoading ? <Loader className='h-[30dvh] md:h-[40dvh]' />  : actionItems }
+                {isLoading ? actionItemLoader  : actionItems }
                 {!isLoading && !dataExist && <EmptyRecentAction />}
             </CardContent>
         </Card>
