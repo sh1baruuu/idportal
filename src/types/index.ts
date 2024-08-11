@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AddApplicantSchema, ApplicantDeleteSchema, ApplicantFormSchema, ApplicantSchema, InsertBackUpSchema, TricycleArraySchema, TricycleSchema, UpdatePasswordFormSchema, UpdatePasswordSchema } from "./schema";
+import { AddApplicantSchema, ApplicantDeleteSchema, ApplicantFormSchema, ApplicantSchema, ForgotPasswordFormSchema, InsertBackUpSchema, TricycleArraySchema, TricycleSchema, UpdatePasswordFormSchema, UpdatePasswordSchema } from "./schema";
 
 export interface LogInCredential {
     email: string;
@@ -77,3 +77,4 @@ export interface TPExportData {
     applicationNo: string;
 };
 export type UpdatePasswordForm = z.infer<typeof UpdatePasswordFormSchema>;
+export type ForgotPasswordFormData = z.infer<typeof ForgotPasswordFormSchema>;

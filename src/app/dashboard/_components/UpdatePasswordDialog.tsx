@@ -35,10 +35,7 @@ const UpdatePasswordDialog: React.FC<Props> = ({ toggleDialog, open }) => {
         resolver: zodResolver(UpdatePasswordFormSchema)
     });
 
-    useEffect(() => {
-        reset();
-    }, [open])
-
+    useEffect(() => reset(), [open])
 
     const onSubmit = async ({ newPassword, currentPassword }: UpdatePasswordForm) => {
         const user = auth.currentUser;
