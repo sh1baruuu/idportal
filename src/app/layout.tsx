@@ -22,15 +22,16 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'Tricycle Permit Console',
         description: 'Easily manage tricycle permits with our user-friendly console.',
-        // images: [
-        //     {
-        //         url: '/images/your-image.jpg',
-        //         width: 800,
-        //         height: 600,
-        //         alt: 'Tricycle Permit Console Interface',
-        //     },
-        // ],
+        images: [
+            {
+                url: '/images/tp-console.jpg',
+                width: 800,
+                height: 600,
+                alt: 'Tricycle Permit Console - Login',
+            },
+        ],
     },
+    authors: [{name: "Rudolph De Villa", url: "https://github.com/sh1baruuu/"}]
 };
 
 
