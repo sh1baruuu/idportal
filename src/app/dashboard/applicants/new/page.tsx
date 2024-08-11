@@ -325,7 +325,7 @@ export default function AddRegistrantPage() {
                                                                 ? new Date(
                                                                       field.value
                                                                   )
-                                                                : null
+                                                                : undefined
                                                         }
                                                         onSelect={(
                                                             date:
