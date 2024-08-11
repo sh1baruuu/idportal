@@ -22,7 +22,7 @@ const RecentActionsCard = () => {
 
         return (
             <div className='flex items-center gap-4' key={aid}>
-                <div className='flex items-center justify-center bg-slate-100 rounded-full h-9 w-9 sm:flex'>
+                <div className='flex items-center justify-center bg-slate-100 dark:bg-secondary rounded-full h-9 w-9 sm:flex'>
                     {category === "Tricycle" ? <Bike className='text-slate-500' size={18} /> : <UserRound className='text-slate-500' size={18} />}
                 </div>
                 <div className='grid gap-1'>
@@ -46,7 +46,7 @@ const RecentActionsCard = () => {
 
         return (
             <div className='flex items-center gap-4' key={i}>
-                <Skeleton className='flex items-center justify-center bg-slate-100 rounded-full h-9 w-9 sm:flex' />
+                <Skeleton className='flex items-center justify-center rounded-full h-9 w-9 sm:flex' />
                   
                 <div className='grid gap-1 mr-auto'>
                     <Skeleton className='h-4 w-24'  />
