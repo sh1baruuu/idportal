@@ -321,7 +321,7 @@ export default function AddRegistrantPage() {
                                                     <Calendar
                                                         mode='single'
                                                         selected={
-                                                            field.value !== null && field.value !== undefined
+                                                            field.value
                                                                 ? new Date(field.value) 
                                                                 : undefined 
                                                         }

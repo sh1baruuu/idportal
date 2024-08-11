@@ -366,7 +366,7 @@ export default function UpdateApplicantPage() {
                                                                                 ? new Date(
                                                                                     field.value
                                                                                 )
-                                                                                : null
+                                                                                : undefined
                                                                         }
                                                                         onSelect={(
                                                                             date:
