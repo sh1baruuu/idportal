@@ -2,21 +2,23 @@
 
 import {
     Bike,
-    Database,
     DatabaseBackup,
-    FileInput,
-    FileOutput,
     Home,
+    KeyRound,
     LineChart,
+    Lock,
+    LogOut,
     LucideProps,
     Package,
     Package2,
     PanelLeft,
     Search,
     Settings,
+    Sheet as SheetIcon,
     ShoppingCart,
+    SunMoon,
     User,
-    Users2,
+    Users2
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -30,12 +32,19 @@ import {
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
+    DropdownMenuPortal,
+    DropdownMenuRadioGroup,
+    DropdownMenuRadioItem,
     DropdownMenuSeparator,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
@@ -48,6 +57,9 @@ import {
 import { useAuth } from '@/context/AuthProvider';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useTheme } from 'next-themes';
+import UpdatePasswordDialog from './_components/UpdatePasswordDialog';
+import { Label } from '@/components/ui/label';
 
 interface Props {
     children: React.ReactNode;
@@ -78,20 +90,16 @@ const navItems: NavItems[] = [
         path: 'tricycles',
     },
     {
-        label: 'TP Data',
-        icon: Database,
-        path: 'data',
+        label: 'Excel Data',
+        icon: SheetIcon,
+        path: 'excel-data',
     },
     {
-        label: 'Export',
+        label: 'Backup and Restore',
         icon: DatabaseBackup,
-        path: 'export',
+        path: 'backup-and-restore',
     },
-    {
-        label: 'Import',
-        icon: FileInput,
-        path: 'import',
-    },
+
 ];
 
 
@@ -101,7 +109,10 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
     const pathname = usePathname();
     const router = useRouter();
     const [search, setSearch] = useState<string>('');
+    const [isLogOutDialogOpen, setLogOutIsDialogOpen] = useState<boolean>(false);
+    const [isUpdatePasswordDialogOpen, setUpdatePasswordIsDialogOpen] = useState<boolean>(false);
     const { onSignOut } = useAuth();
+    const { setTheme, theme } = useTheme();
 
     useEffect(() => {
         const params = new URLSearchParams(searchParams);
@@ -113,7 +124,7 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
 
         const delayDebounceFn = setTimeout(() => {
             router.replace(`${pathname}?${params.toString()}`);
-        }, 300); 
+        }, 300);
 
         return () => clearTimeout(delayDebounceFn);
     }, [search]);
@@ -137,13 +148,20 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
     };
 
     const handleSearchClick = () => {
-        if (pathname === "/dashboard") {
+        if (pathname === "/dashboard" || pathname === '/dashboard/backup-and-restore') {
             router.push("/dashboard/applicants")
         }
-        
     }
 
-    const signOut = async (): Promise<void> => {
+    const toggleLogOutDialog = () => {
+        setLogOutIsDialogOpen(prev => !prev);
+    }
+
+    const toggleUpdatePasswordDialog = () => {
+        setUpdatePasswordIsDialogOpen(prev => !prev);
+    }
+
+    const signOut = async () => {
         try {
             await onSignOut();
             router.push('/login');
@@ -161,7 +179,7 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
                         className='group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base'
                     >
                         <Package2 className='h-4 w-4 transition-all group-hover:scale-110' />
-                        <span className='sr-only'>Acme Inc</span>
+
                     </Link>
                     {navItems?.map((item, i) => {
                         return (
@@ -169,11 +187,10 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
                                 <TooltipTrigger asChild>
                                     <Link
                                         href={`/dashboard/${item.path}`}
-                                        className={`flex h-9 w-9 items-center justify-center rounded-lg  transition-colors hover:text-foreground md:h-8 md:w-8 ${
-                                            item.path === currentPath
-                                                ? 'bg-accent text-foreground'
-                                                : 'text-muted-foreground'
-                                        }`}
+                                        className={`flex h-9 w-9 items-center justify-center rounded-lg  transition-colors hover:text-foreground md:h-8 md:w-8 ${item.path === currentPath
+                                            ? 'bg-accent text-foreground'
+                                            : 'text-muted-foreground'
+                                            }`}
                                     >
                                         <item.icon className='h-5 w-5' />
                                         <span className='sr-only'>
@@ -187,20 +204,6 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
                             </Tooltip>
                         );
                     })}
-                </nav>
-                <nav className='mt-auto flex flex-col items-center gap-4 px-2 sm:py-4'>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Link
-                                href='/'
-                                className='flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8'
-                            >
-                                <Settings className='h-5 w-5' />
-                                <span className='sr-only'>Settings</span>
-                            </Link>
-                        </TooltipTrigger>
-                        <TooltipContent side='right'>Settings</TooltipContent>
-                    </Tooltip>
                 </nav>
             </aside>
             <div className='flex flex-col sm:gap-4 sm:py-4 sm:pl-14'>
@@ -223,43 +226,23 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
                                     className='group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base'
                                 >
                                     <Package2 className='h-5 w-5 transition-all group-hover:scale-110' />
-                                    <span className='sr-only'>Acme Inc</span>
+                                    <span className='sr-only'>Tricycle Permit Console</span>
                                 </Link>
-                                <Link
-                                    href='/'
-                                    className='flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground'
-                                >
-                                    <Home className='h-5 w-5' />
-                                    Dashboard
-                                </Link>
-                                <Link
-                                    href='#'
-                                    className='flex items-center gap-4 px-2.5 text-foreground'
-                                >
-                                    <ShoppingCart className='h-5 w-5' />
-                                    Orders
-                                </Link>
-                                <Link
-                                    href='#'
-                                    className='flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground'
-                                >
-                                    <Package className='h-5 w-5' />
-                                    Products
-                                </Link>
-                                <Link
-                                    href='#'
-                                    className='flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground'
-                                >
-                                    <Users2 className='h-5 w-5' />
-                                    Customers
-                                </Link>
-                                <Link
-                                    href='#'
-                                    className='flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground'
-                                >
-                                    <LineChart className='h-5 w-5' />
-                                    Settings
-                                </Link>
+                                {navItems?.map((item, i) => {
+                                    return (
+                                        <Link
+                                            key={i}
+                                            href={`/dashboard/${item.path}`}
+                                            className={`flex text-sm items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground ${item.path === currentPath
+                                            ? 'text-foreground'
+                                            : 'text-muted-foreground'
+                                            }`}
+                                        >
+                                            <item.icon className='h-5 w-5' />
+                                            {item.label}
+                                        </Link>
+                                    );
+                                })}
                             </nav>
                         </SheetContent>
                     </Sheet>
@@ -279,8 +262,10 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
                         </BreadcrumbList>
                     </Breadcrumb>
                     <div className='relative ml-auto flex-1 md:grow-0'>
+                        <Label htmlFor='search' className='sr-only' >Search</Label>
                         <Search className='absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground' />
                         <Input
+                            id='search'
                             type='search'
                             placeholder='Search...'
                             value={search}
@@ -297,7 +282,7 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
                                 className='overflow-hidden rounded-full'
                             >
                                 <Image
-                                    src='/assets/placeholder-user.jpg'
+                                    src='/assets/slb.png'
                                     width={36}
                                     height={36}
                                     alt='Avatar'
@@ -305,17 +290,42 @@ export default function DashboardLayout({ children }: Readonly<Props>) {
                                 />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align='end'>
+                        <DropdownMenuContent align='end' className='min-w-56'>
                             <DropdownMenuLabel>My Account</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem>Settings</DropdownMenuItem>
-                            <DropdownMenuItem>Support</DropdownMenuItem>
+                            <DropdownMenuSub>
+                                <DropdownMenuSubTrigger><SunMoon size={16} className='stroke-muted-foreground mr-2' />Themes</DropdownMenuSubTrigger>
+                                <DropdownMenuPortal>
+                                    <DropdownMenuSubContent >
+                                        <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
+                                            <DropdownMenuRadioItem value="light">Light</DropdownMenuRadioItem>
+                                            <DropdownMenuRadioItem value="dark">Dark</DropdownMenuRadioItem>
+                                            <DropdownMenuRadioItem value="system">System</DropdownMenuRadioItem>
+                                        </DropdownMenuRadioGroup>
+                                    </DropdownMenuSubContent>
+                                </DropdownMenuPortal>
+                            </DropdownMenuSub><DropdownMenuItem onClick={toggleUpdatePasswordDialog}><Lock size={16} className='stroke-muted-foreground mr-2' />Password</DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={signOut}>
-                                Logout
+                            <DropdownMenuItem onClick={toggleLogOutDialog}>
+                                <LogOut size={16} className='stroke-muted-foreground mr-2' /> Log out
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
+                    <Dialog open={isLogOutDialogOpen} onOpenChange={toggleLogOutDialog}>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Confirm Logout</DialogTitle>
+                                <DialogDescription>
+                                    Are you sure you want to log out?
+                                </DialogDescription>
+                            </DialogHeader>
+                            <DialogFooter className='flex flex-col-reverse md:flex-row gap-1'>
+                                <Button variant="outline" onClick={toggleLogOutDialog}>Cancel</Button>
+                                <Button variant="destructive" onClick={signOut}>Logout</Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                    <UpdatePasswordDialog open={isUpdatePasswordDialogOpen} toggleDialog={toggleUpdatePasswordDialog} />
                 </header>
                 {children}
             </div>

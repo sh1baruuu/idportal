@@ -101,7 +101,6 @@ const TricycleTable: React.FC<Props> = ({
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align='end'>
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem>Edit</DropdownMenuItem>
                             <DropdownMenuItem
                                 onClick={() => {
                                     setSelectedPlateNo(t.plateOrStickerNo);

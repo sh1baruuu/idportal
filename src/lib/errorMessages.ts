@@ -13,3 +13,27 @@ export const getSignInErrorMessage = (code: string): string => {
             return 'An unknown error occurred. Please try again.';
     }
 };
+
+
+export const getPasswordError = async (error: any) => {
+    let errorObj: {passwordError?: string, confirmError?: string } = {};
+
+    if (error.message === "pass/is-empty") {
+        errorObj.passwordError = "Password cannot be empty.";
+    } else if (error.code === "auth/wrong-password") {
+        errorObj.passwordError = "Incorrect password.";
+    } else if (error.code === "auth/missing-password") {
+        errorObj.passwordError = "Password cannot be empty.";
+    } else if (error.code === "auth/weak-password") {
+        errorObj.passwordError = "Password should be at least 6 characters.";
+    } else if (error.message === "pass/test-failed") {
+        errorObj.passwordError =
+            "Password must contain an uppercase letter, one symbol, and one number.";
+    } else if (error.message === "confirm-pass/is-empty") {
+        errorObj.confirmError = "Confirm password cannot be empty.";
+    } else if (error.message === "pass/not-match") {
+        errorObj.confirmError = "Confirm password did not match.";
+    }
+
+    return errorObj;
+};

@@ -39,7 +39,7 @@ const ApplicantDeleteDialog: React.FC<Props> = ({
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction className='bg-destructive hover:bg-red-400' onClick={() => onDelete(id ?? "", name)}>
+                    <AlertDialogAction className='bg-destructive dark:text-white hover:bg-red-400' onClick={() => onDelete(id ?? "", name)}>
                         Delete
                     </AlertDialogAction>
                 </AlertDialogFooter>

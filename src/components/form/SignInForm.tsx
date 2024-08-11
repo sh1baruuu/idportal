@@ -9,6 +9,10 @@ import { LuEye, LuEyeOff } from 'react-icons/lu';
 import { MdLock, MdPerson } from 'react-icons/md';
 import Spinner from '../common/Spinner';
 import { LogInCredential } from '@/types';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import ForgotPasswordDialog from '@/app/dashboard/_components/ForgotPasswordDialog';
 
 const emptyUserCredential: LogInCredential = {
     email: '',
@@ -23,6 +27,8 @@ const SignInForm = () => {
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const { toggleKeepMeLoggedIn, keepMeLoggedIn } = useKeepMeLoggedInStore();
     const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
+    const [ forgotPasswordmodalIsOpen, setForgotPasswordmodalIsOpen ]= useState<boolean>(false);
+
 
     const toggleShowPassword = (): void => {
         setShowPassword(!showPassword);
@@ -36,9 +42,9 @@ const SignInForm = () => {
         }));
     };
 
-    const handleSubmit = async (
-        e: React.FormEvent<HTMLFormElement>
-    ): Promise<void> => {
+    const toggleForgotPasswordModal = () => setForgotPasswordmodalIsOpen(prev => !prev);
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement> ): Promise<void> => {
         e.preventDefault();
         try {
             setIsLoggingIn(true);
@@ -56,73 +62,76 @@ const SignInForm = () => {
     };
 
     return (
-        <form
-            className='flex p-2  flex-col gap-4 w-[340px] rounded-2xl'
-            onSubmit={handleSubmit}
-        >
-            <div className='relative w-full'>
-                <MdPerson className='absolute left-4     top-2/4 -translate-y-2/4 text-gray-400 text-lg' />
-                <input
-                    required
-                    type='email'
-                    name='email'
-                    placeholder='Email'
-                    autoComplete='on'
-                    onChange={handleChange}
-                    value={logInCredential.email}
-                    maxLength={254}
-                    className='border border-gray-400 rounded-full w-full focus:outline-blue-400 text-sm py-[10px] pl-11 pr-6 text-gray-800'
-                />
-            </div>
-            <div className='relative w-full'>
-                <MdLock className='absolute left-4  top-2/4 -translate-y-2/4 text-gray-400' />
-                <input
-                    required
-                    type={showPassword ? 'text' : 'password'}
-                    name='password'
-                    placeholder='Password'
-                    autoComplete='on'
-                    onChange={handleChange}
-                    value={logInCredential.password}
-                    maxLength={64}
-                    className='border border-gray-400 rounded-full w-full focus:outline-blue-400 text-sm py-[10px] px-11 text-gray-800'
-                />
-                <button
-                    type='button'
-                    onClick={toggleShowPassword}
-                    className='absolute right-5 text-gray-700 top-2/4 -translate-y-2/4'
-                >
-                    {showPassword ? <LuEye /> : <LuEyeOff />}
-                </button>
-            </div>
+        <>
 
-            <div className='flex py-1 select-none w-fit'>
-                <input
-                    type='checkbox'
-                    name='keepMeLoggedIn'
-                    id='keepMeLoggedIn'
-                    onChange={toggleKeepMeLoggedIn}
-                    checked={keepMeLoggedIn}
-                    className='ml-2 mr-1'
-                />
-                <label
-                    className='text-xs text-gray-800 font-semibold'
-                    htmlFor='keepMeLoggedIn'
-                >
-                    Keep me logged in
-                </label>
-            </div>
-            <button
-                type='submit'
-                disabled={isLoggingIn}
-                className={`flex items-center justify-center transition-all rounded-full select-none  text-white text-sm py-2 mt-2 ${isLoggingIn ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-600'}`}
+            <form
+                className='flex p-2  flex-col gap-4 w-[340px] rounded-2xl'
+                onSubmit={handleSubmit}
             >
-                {isLoggingIn ? <Spinner /> : 'Log in'}
-            </button>
-            <p className='text-xs select-none text-blue-600 w-full text-center font-bold'>
-                Forgot password?
-            </p>
-        </form>
+                <div className='relative w-full'>
+                    <MdPerson className='absolute left-4 top-2/4 -translate-y-2/4 text-gray-400 text-lg' />
+                    <Input
+                        required
+                        type='email'
+                        name='email'
+                        placeholder='Email'
+                        autoComplete='on'
+                        onChange={handleChange}
+                        value={logInCredential.email}
+                        maxLength={254}
+                        className='border-slate-300 pl-11 pr-6'
+                    />
+                </div>
+                <div className='relative w-full'>
+                    <MdLock className='absolute left-4  top-2/4 -translate-y-2/4 text-gray-400' />
+                    <Input
+                        required
+                        type={showPassword ? 'text' : 'password'}
+                        name='password'
+                        placeholder='Password'
+                        autoComplete='on'
+                        onChange={handleChange}
+                        value={logInCredential.password}
+                        maxLength={64}
+                        className='border-slate-300 pl-11 pr-6'
+                    />
+                    <button
+                        type='button'
+                        onClick={toggleShowPassword}
+                        className='absolute right-5 text-gray-400 top-2/4 ark:text-muted-foreground -translate-y-2/4'
+                    >
+                        {showPassword ? <LuEye /> : <LuEyeOff />}
+                    </button>
+                </div>
+
+                <div className='flex py-1 select-none w-fit'>
+                    <input
+                        type='checkbox'
+                        name='keepMeLoggedIn'
+                        id='keepMeLoggedIn'
+                        onChange={toggleKeepMeLoggedIn}
+                        checked={keepMeLoggedIn}
+                        className='ml-2 mr-1'
+                    />
+                    <Label
+                        className='text-xs'
+                        htmlFor='keepMeLoggedIn'
+                    >
+                        Keep me logged in
+                    </Label>
+                </div>
+                <Button
+                    type='submit'
+                    disabled={isLoggingIn}
+                >
+                    {isLoggingIn ? <Spinner /> : 'Log in'}
+                </Button>
+                <p onClick={toggleForgotPasswordModal} className='text-xs select-none cursor-pointer text-blue-600 hover:underline w-full text-center font-bold'>
+                    Forgot password?
+                </p>
+            </form>
+            <ForgotPasswordDialog open={forgotPasswordmodalIsOpen} toggleModal={toggleForgotPasswordModal} />
+        </>
     );
 };
 

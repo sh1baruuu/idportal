@@ -7,8 +7,6 @@ import { BatchItem } from 'drizzle-orm/batch';
 export const addApplicant = async (input: AddApplicant) => {
     const { applicant: app, tricycle: tri } = input;
 
-
-
     const applicantInsertQuery = db.insert(applicant).values({
         applicationNo: app.applicationNo,
         applicationType: app.applicationType,
@@ -28,15 +26,12 @@ export const addApplicant = async (input: AddApplicant) => {
     })
 
 
-
     let query: [BatchItem<"pg">, ...BatchItem<"pg">[]] = [applicantInsertQuery, addActionQuery];
-
 
     if (tri && tri.length > 0) {
         const tricycleInsertQuery = db.insert(tricycle).values(tri);
         query.push(tricycleInsertQuery);
     }
-
 
     try {
         console.log(query);

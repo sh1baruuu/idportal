@@ -1,13 +1,14 @@
+import { Toaster as ShadToaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { AuthProvider } from '@/context/AuthProvider';
+import { ThemeProvider } from '@/context/ThemeProvider';
 import { TRCPProvider } from '@/context/TRPCProvider';
 import { cn } from '@/lib/utils';
 import '@/styles/globals.css';
 import type { Metadata } from 'next';
 import { Inter as FontSans } from 'next/font/google';
-import { Toaster } from 'react-hot-toast';
-import { Toaster as ShadToaster } from '@/components/ui/toaster';
 import { Suspense } from 'react';
+import { Toaster } from 'react-hot-toast';
 import Loader from './dashboard/_components/Loader';
 
 const fontSans = FontSans({
@@ -16,9 +17,22 @@ const fontSans = FontSans({
 });
 
 export const metadata: Metadata = {
-    title: 'Welcome to IDPortal',
-    description: 'Developed by shibadev',
+    title: 'Tricycle Permit Console',
+    description: 'Streamline tricycle permit management with ease using our intuitive console.',
+    openGraph: {
+        title: 'Tricycle Permit Console',
+        description: 'Easily manage tricycle permits with our user-friendly console.',
+        // images: [
+        //     {
+        //         url: '/images/your-image.jpg',
+        //         width: 800,
+        //         height: 600,
+        //         alt: 'Tricycle Permit Console Interface',
+        //     },
+        // ],
+    },
 };
+
 
 interface Props {
     children: React.ReactNode;
@@ -32,24 +46,30 @@ const toastOptions = {
 
 export default function RootLayout({ children }: Readonly<Props>) {
     return (
-        <html lang='en'>
+        <html lang='en' suppressHydrationWarning>
             <body
                 className={cn(
                     'min-h-screen bg-background font-sans antialiased',
                     fontSans.variable
                 )}
+            ><ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
             >
-                <AuthProvider>
-                    <TRCPProvider>
-                        <TooltipProvider>
-                            <Toaster toastOptions={toastOptions} />
-                            <ShadToaster />
-                            <Suspense fallback={<Loader className='h-screen' />}>
-                                {children}
-                            </Suspense>
-                        </TooltipProvider>
-                    </TRCPProvider>
-                </AuthProvider>
+                    <AuthProvider>
+                        <TRCPProvider>
+                            <TooltipProvider>
+                                <Toaster toastOptions={toastOptions} />
+                                <ShadToaster />
+                                <Suspense fallback={<Loader className='h-screen' />}>
+                                    {children}
+                                </Suspense>
+                            </TooltipProvider>
+                        </TRCPProvider>
+                    </AuthProvider>
+                </ThemeProvider>
             </body>
         </html>
     );

@@ -37,7 +37,7 @@ const TricycleDeleteDialog: React.FC<Props> = ({
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction className='bg-destructive hover:bg-red-400' onClick={() => onDelete(id)}>
+                    <AlertDialogAction className='bg-destructive hover:bg-red-400 dark:text-white' onClick={() => onDelete(id)}>
                         Delete
                     </AlertDialogAction>
                 </AlertDialogFooter>

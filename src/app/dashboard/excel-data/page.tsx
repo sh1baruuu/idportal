@@ -5,34 +5,53 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Download, Loader } from 'lucide-react';
+import * as Filesaver from "file-saver";
+import { Download } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import XLSX from "sheetjs-style";
+import Loader from '../_components/Loader';
 
 
-const ExportPage = () => {
+interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    excelData: any;
+    fileName: string;
+}
+
+const ExportExcelButton: React.FC<Props> = ({ excelData, fileName, ...props }) => {
     const { push } = useRouter();
-    const { isLoading, data } = trpc.getBackUpData.useQuery();
-    const fileName = 'TP-Console-BackUp';
+
+    const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;chartset=UTF-8';
+    const fileExtenstion = '.xlsx';
+
+    const exportToExcel = async () => {
+        const ws = XLSX.utils.json_to_sheet(excelData);
+        const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const data = new Blob([excelBuffer], { type: fileType });
+        Filesaver.saveAs(data, fileName + fileExtenstion);
+
+        push("/dashboard");
+    }
+
+    return (
+        <Button type="submit" size="sm" className="px-3" onClick={exportToExcel}>
+            <span className="sr-only">Export</span>
+            <Download className="h-4 w-4" />
+        </Button>
+    )
+}
+
+const DataPage = () => {
+    const { push } = useRouter();
+    const exportTPData = trpc.exportTPData.useQuery();
+    const fileName = 'Tricycle Permit Data';
 
     const routeToDashBoard = () => push("/dashboard")
 
-    if (isLoading) {
+    if (exportTPData.isLoading) {
         return <Loader />
     }
-    const exportData = () => {
-        const currentDate = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
-        const fileNameEx = `${fileName}-${currentDate}.json`;
-    
-        const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
-            JSON.stringify(data)
-        )}`;
-        const link = document.createElement("a");
-        link.href = jsonString;
-        link.download = fileNameEx;
-    
-        link.click();
-    };
-    
+
     return (
         <Dialog open={true} defaultOpen onOpenChange={routeToDashBoard} >
             <DialogContent className="sm:max-w-md">
@@ -49,14 +68,11 @@ const ExportPage = () => {
                         </Label>
                         <Input
                             id="link"
-                            defaultValue={fileName+".json"}
+                            defaultValue={fileName + ".xlsx"}
                             readOnly
                         />
                     </div>
-                    <Button type="submit" size="sm" className="px-3" onClick={exportData}>
-                        <span className="sr-only">Export</span>
-                        <Download className="h-4 w-4" />
-                    </Button>
+                    <ExportExcelButton excelData={exportTPData.data} fileName={fileName} />
                 </div>
                 <DialogFooter className="sm:justify-start">
                     <DialogClose asChild>
@@ -70,4 +86,4 @@ const ExportPage = () => {
     )
 }
 
-export default ExportPage;
+export default DataPage;
