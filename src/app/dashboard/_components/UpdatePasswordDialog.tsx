@@ -14,10 +14,10 @@ import { auth } from '@/config/firebaseConfig';
 import { UpdatePasswordForm } from '@/types';
 import { UpdatePasswordFormSchema } from '@/types/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { DialogProps } from '@radix-ui/react-dialog';
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import CustomInputMessage from './CustomInputMessage';
 
 interface Props {
     toggleDialog: () => void;
@@ -34,6 +34,10 @@ const UpdatePasswordDialog: React.FC<Props> = ({ toggleDialog, open }) => {
         },
         resolver: zodResolver(UpdatePasswordFormSchema)
     });
+
+    useEffect(() => {
+        reset();
+    }, [open])
 
 
     const onSubmit = async ({ newPassword, currentPassword }: UpdatePasswordForm) => {
@@ -62,9 +66,7 @@ const UpdatePasswordDialog: React.FC<Props> = ({ toggleDialog, open }) => {
 
             } catch (error: any) {
 
-                if (error.code === "auth/missing-password") {
-                    setError("currentPassword", { type: "manual", message: "This field cannot be empty" });
-                } else if (error.code === "auth/invalid-login-credentials" || error.code === "auth/invalid-credential") {
+                if (error.code === "auth/invalid-login-credentials" || error.code === "auth/invalid-credential") {
                     setError("currentPassword", { type: "manual", message: "Incorrect password. Please try again" });
                 } else if (error.message === "auth/same-password") {
                     setError("newPassword", { type: "manual", message: "New password must be different from the current password" });
@@ -87,36 +89,60 @@ const UpdatePasswordDialog: React.FC<Props> = ({ toggleDialog, open }) => {
 
     return (
         <Dialog onOpenChange={toggleDialog} open={open}>
-            <DialogContent className="grid gap-4">
+            <DialogContent >
                 <DialogHeader>
                     <DialogTitle>
-                        Are you absolutely sure?
+                        Update Your Password
                     </DialogTitle>
                     <DialogDescription>
-                        {/* Add any description here if needed */}
+                        For your security, please enter your current password along with the new password you would like to set.
                     </DialogDescription>
                 </DialogHeader>
+                <form className="grid gap-4" autoComplete='off'>
+                    <div className="grid gap-2 pt-4">
+                        <Label htmlFor="currentPassword">Current Password</Label>
+                        <div>
+                            <Input
+                                type='password'
+                                disabled={isLoading}
+                                id="currentPassword"
+                                {...register('currentPassword')}
+                                className={errors.currentPassword ? "border-destructive focus-visible:ring-destructive" : ""}
+                            />
+                            {errors.currentPassword && <CustomInputMessage message={errors.currentPassword.message} />}
+                        </div>
+                    </div>
 
-                <div className="grid gap-2">
-                    <Label htmlFor="currentPassword">Current Password</Label>
-                    <Input id="currentPassword" {...register('currentPassword')} />
-                    {errors.currentPassword && <span>{errors.currentPassword.message}</span>}
-                </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="newPassword">New Password</Label>
+                        <div>
+                            <Input
+                                type='password'
+                                disabled={isLoading}
+                                id="newPassword"
+                                {...register('newPassword')}
+                                className={errors.newPassword && !errors.currentPassword ? "border-destructive focus-visible:ring-destructive" : ""}
+                            />
+                            {!errors.currentPassword && errors.newPassword && <CustomInputMessage message={errors.newPassword.message} />}
+                        </div>
+                    </div>
 
-                <div className="grid gap-2">
-                    <Label htmlFor="newPassword">New Password</Label>
-                    <Input id="newPassword" {...register('newPassword')} />
-                    {!errors.currentPassword && errors.newPassword && <span>{errors.newPassword.message}</span>}
-                </div>
-
-                <div className="grid gap-2">
-                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                    <Input id="confirmPassword" {...register('confirmPassword')} />
-                    {!errors.newPassword && errors.confirmPassword && <span>{errors.confirmPassword.message}</span>}
-                </div>
-
+                    <div className="grid gap-2">
+                        <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                        <div>
+                            <Input
+                                type='password'
+                                disabled={isLoading}
+                                id="confirmPassword"
+                                {...register('confirmPassword')}
+                                className={errors.confirmPassword && !errors.newPassword ? "border-destructive focus-visible:ring-destructive" : ""}
+                            />
+                            {!errors.newPassword && errors.confirmPassword && <CustomInputMessage message={errors.confirmPassword.message} />}
+                        </div>
+                    </div>
+                </form>
                 <DialogFooter>
-                    <Button onClick={handleSubmit(onSubmit)} className="w-full">
+                    <Button onClick={handleSubmit(onSubmit)} disabled={isLoading} className="w-full">
                         {isLoading ? "Updating password..." : "Update Password"}
                     </Button>
                 </DialogFooter>

@@ -1,13 +1,13 @@
-import { Button } from '@/components/ui/button';
 import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface Props {
     onDelete: (applicantId: string, fullname: string) => Promise<void>;
@@ -27,24 +27,24 @@ const ApplicantDeleteDialog: React.FC<Props> = ({
     name
 }) => {
     return (
-        <Dialog onOpenChange={onOpenChange} open={open}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>
+        <AlertDialog onOpenChange={onOpenChange} open={open}>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>
                         Are you absolutely sure?
-                    </DialogTitle>
-                    <DialogDescription>
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
                         {description}
-                    </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                    <DialogClose>Cancel</DialogClose>
-                    <Button className='bg-destructive dark:text-white hover:bg-red-400' onClick={() => onDelete(id ?? "", name)}>
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction className='bg-destructive dark:text-white hover:bg-red-400' onClick={() => onDelete(id ?? "", name)}>
                         Delete
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     );
 };
 
