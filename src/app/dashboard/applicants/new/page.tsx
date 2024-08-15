@@ -425,7 +425,7 @@ export default function AddRegistrantPage() {
                                     <FormField
                                         control={applicantForm.control}
                                         name='licenseNo'
-                                        disabled={addApplicant.isPending}
+                                        disabled={addApplicant.isPending || !isDriverOperator}
                                         render={({ field }) => (
                                             <FormItem className='flex flex-col'>
                                                 <FormLabel htmlFor='licenseNo'>

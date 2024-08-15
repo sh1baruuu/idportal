@@ -466,7 +466,7 @@ export default function UpdateApplicantPage() {
                                                     <FormField
                                                         control={applicantForm.control}
                                                         name='licenseNo'
-                                                        disabled={updateApplicant.isPending}
+                                                        disabled={updateApplicant.isPending || !isDriverOperator}
                                                         render={({ field }) => (
                                                             <FormItem className='flex flex-col'>
                                                                 <FormLabel htmlFor='licenseNo'>

@@ -5,7 +5,7 @@ export const applicant = pgTable('applicant_tb', {
     applicationType: varchar('application_type').notNull(),
     fullname: varchar('fullname').notNull(),
     address: varchar('address').notNull(),
-    contactNo: varchar('contact_no').notNull(),
+    contactNo: varchar('contact_no'),
     licenseNo: varchar('sss/license_no').unique(),
     applicationDate: date('application_date').notNull(),
     driverName: varchar('driver_name').notNull(),
